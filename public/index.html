@@ -11,37 +11,24 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-        body {
-            font-family: 'Press Start 2P', system-ui;
-        }
+        body { font-family: 'Press Start 2P', system-ui; }
 
         .hero-bg {
             background: #04000f;
             position: relative;
             overflow: hidden;
         }
-
-        /* Kill old grid overlay */
         .hero-bg::before { display: none; }
 
-        /* ── RETRO SCENE LAYERS ── */
-
-        /* 1. Deep space sky */
         .retro-sky {
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0; z-index: 0;
             background:
                 radial-gradient(ellipse 80% 60% at 50% 0%, #3a005a 0%, #1a0035 40%, #04000f 80%),
                 radial-gradient(ellipse 40% 30% at 20% 20%, #5500aa44 0%, transparent 70%),
                 radial-gradient(ellipse 40% 30% at 80% 15%, #220066aa 0%, transparent 70%);
-            z-index: 0;
         }
-
-        /* 2. Stars */
         .retro-stars {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
+            position: absolute; inset: 0; z-index: 1;
             background-image:
                 radial-gradient(1px 1px at 10% 8%, #fff 100%, transparent),
                 radial-gradient(1px 1px at 22% 3%, #fff 100%, transparent),
@@ -68,7 +55,6 @@
                 radial-gradient(2px 2px at 45% 44%, #fff 100%, transparent),
                 radial-gradient(1px 1px at 62% 40%, #cceeff 100%, transparent),
                 radial-gradient(1px 1px at 95% 43%, #fff 100%, transparent),
-                radial-gradient(1px 1px at 3% 50%, #fff 100%, transparent),
                 radial-gradient(1px 1px at 25% 52%, #fff 100%, transparent),
                 radial-gradient(1.5px 1.5px at 38% 48%, #fff 100%, transparent),
                 radial-gradient(1px 1px at 58% 55%, #fff 100%, transparent),
@@ -81,112 +67,57 @@
             50%  { opacity: 1; }
             100% { opacity: 0.8; }
         }
-
-        /* 3. Nebula clouds */
         .retro-nebula {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
+            position: absolute; inset: 0; z-index: 2; pointer-events: none;
             background:
                 radial-gradient(ellipse 55% 25% at 15% 25%, #6600cc33 0%, transparent 70%),
                 radial-gradient(ellipse 45% 20% at 85% 30%, #330099aa 0%, transparent 70%),
                 radial-gradient(ellipse 30% 15% at 50% 10%, #aa00ff22 0%, transparent 60%);
-            pointer-events: none;
         }
-
-        /* 4. Sun */
         .retro-sun {
             position: absolute;
-            width: min(38vw, 340px);
-            height: min(38vw, 340px);
+            width: min(55vw, 340px);
+            height: min(55vw, 340px);
             border-radius: 50%;
-            left: 50%;
-            top: 6%;
+            left: 50%; top: 6%;
             transform: translateX(-50%);
             z-index: 3;
-            background: linear-gradient(
-                to bottom,
-                #ffe800 0%,
-                #ffcc00 18%,
-                #ff9900 35%,
-                #ff6600 50%,
-                #ff3355 65%,
-                #cc1155 80%,
-                #990044 100%
-            );
-            box-shadow:
-                0 0 60px #ffcc0099,
-                0 0 120px #ff660066,
-                0 0 220px #ff005544,
-                0 0 350px #cc003322;
+            background: linear-gradient(to bottom, #ffe800 0%, #ffcc00 18%, #ff9900 35%, #ff6600 50%, #ff3355 65%, #cc1155 80%, #990044 100%);
+            box-shadow: 0 0 60px #ffcc0099, 0 0 120px #ff660066, 0 0 220px #ff005544, 0 0 350px #cc003322;
             overflow: hidden;
         }
-        /* Horizontal stripes on lower half of sun */
         .retro-sun::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 62%;
-            background: repeating-linear-gradient(
-                to bottom,
-                transparent 0px,
-                transparent 7px,
-                rgba(10, 0, 5, 0.75) 7px,
-                rgba(10, 0, 5, 0.75) 11px
-            );
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 62%;
+            background: repeating-linear-gradient(to bottom, transparent 0px, transparent 7px, rgba(10,0,5,0.75) 7px, rgba(10,0,5,0.75) 11px);
         }
-        /* Sun glow halo behind */
         .retro-sun-halo {
             position: absolute;
-            width: min(60vw, 540px);
-            height: min(60vw, 540px);
+            width: min(80vw, 540px);
+            height: min(80vw, 540px);
             border-radius: 50%;
-            left: 50%;
-            top: calc(6% - 11%);
+            left: 50%; top: calc(6% - 11%);
             transform: translateX(-50%);
-            z-index: 2;
+            z-index: 2; pointer-events: none;
             background: radial-gradient(circle, #ff660033 0%, #cc003311 40%, transparent 70%);
-            pointer-events: none;
         }
-
-        /* 5. Mountains (SVG injected via HTML) */
         .retro-mountains {
-            position: absolute;
-            bottom: 35%;
-            left: 0; right: 0;
-            z-index: 4;
-            pointer-events: none;
+            position: absolute; bottom: 35%; left: 0; right: 0; z-index: 4; pointer-events: none;
         }
         .retro-mountains svg { width: 100%; height: auto; display: block; }
-
-        /* 6. Horizon glow line */
         .retro-horizon {
-            position: absolute;
-            bottom: 35%;
-            left: 0; right: 0;
-            height: 3px;
-            z-index: 5;
+            position: absolute; bottom: 35%; left: 0; right: 0; height: 3px; z-index: 5; pointer-events: none;
             background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, #ff00ff, transparent);
             box-shadow: 0 0 12px #ff00ff, 0 0 30px #ff00ff88;
-            pointer-events: none;
         }
-
-        /* 7. Neon perspective grid floor */
         .retro-grid {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 36%;
-            z-index: 4;
-            overflow: hidden;
-            pointer-events: none;
+            position: absolute; bottom: 0; left: 0; right: 0; height: 36%; z-index: 4; overflow: hidden; pointer-events: none;
         }
         .retro-grid-inner {
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background:
                 linear-gradient(to bottom, #04000f 0%, transparent 20%),
-                linear-gradient(rgba(0, 200, 255, 0.7) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 200, 255, 0.7) 1px, transparent 1px);
+                linear-gradient(rgba(0,200,255,0.7) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,200,255,0.7) 1px, transparent 1px);
             background-size: 100% 100%, 100px 80px, 80px 80px;
             transform: perspective(300px) rotateX(55deg);
             transform-origin: top center;
@@ -196,130 +127,110 @@
             0%   { background-position: 0 0, 0 0, 0 0; }
             100% { background-position: 0 0, 0 80px, 0 0; }
         }
-        /* grid side glow lines */
         .retro-grid::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg,
-                rgba(255, 0, 255, 0.25) 0%, transparent 20%,
-                transparent 80%, rgba(255, 0, 255, 0.25) 100%);
-            z-index: 1;
+            content: ''; position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(90deg, rgba(255,0,255,0.25) 0%, transparent 20%, transparent 80%, rgba(255,0,255,0.25) 100%);
         }
-        /* fade top of grid into sky */
         .retro-grid::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 40%;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%; z-index: 2;
             background: linear-gradient(to bottom, #04000f, transparent);
-            z-index: 2;
         }
 
         .neon-text {
-            text-shadow:
-                0 0 12px #ff00ff,
-                0 0 25px #ff00ff,
-                0 0 50px #00ffff,
-                0 0 80px #ffff00;
+            text-shadow: 0 0 12px #ff00ff, 0 0 25px #ff00ff, 0 0 50px #00ffff, 0 0 80px #ffff00;
         }
-
         .neon-yellow {
-            text-shadow:
-                0 0 20px #ffff00,
-                0 0 45px #ffff00,
-                0 0 75px #ff00ff;
+            text-shadow: 0 0 20px #ffff00, 0 0 45px #ffff00, 0 0 75px #ff00ff;
         }
-
         .logo-glow {
             filter: drop-shadow(0 0 50px #ff00ff) drop-shadow(0 0 100px #00ffff);
         }
-
         .hero-logo-cyan {
             filter: hue-rotate(150deg) saturate(6) brightness(1.2) drop-shadow(0 0 20px #00ffff) drop-shadow(0 0 40px #00ffff88);
         }
-
         .scanline {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.06) 50%);
-            background-size: 100% 8px;
-            pointer-events: none;
-            animation: scan 8s linear infinite;
-            opacity: 0.45;
+            background-size: 100% 8px; pointer-events: none;
+            animation: scan 8s linear infinite; opacity: 0.45;
         }
-
         @keyframes scan {
-            0% { transform: translateY(-180%); }
+            0%   { transform: translateY(-180%); }
             100% { transform: translateY(400%); }
         }
-
-        .card-hover:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 0 50px #ff00ff;
-        }
-
-        .neon-button {
-            position: relative;
-            overflow: hidden;
-        }
-
+        .card-hover { transition: transform 0.3s, box-shadow 0.3s; }
+        .card-hover:hover { transform: translateY(-10px); box-shadow: 0 0 50px #ff00ff; }
+        .neon-button { position: relative; overflow: hidden; }
         .neon-button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 40%;
-            height: 300%;
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 40%; height: 300%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-            transform: skewX(-25deg);
-            animation: shine 4s linear infinite;
+            transform: skewX(-25deg); animation: shine 4s linear infinite;
         }
+        @keyframes shine { 100% { transform: translateX(400%); } }
 
-        @keyframes shine {
-            100% { transform: translateX(400%); }
+        /* ── MOBILE HAMBURGER MENU ── */
+        .mobile-menu { display: none; }
+        .mobile-menu.open { display: flex; }
+
+        @media (max-width: 767px) {
+            /* Reduce heavy text shadows on mobile for performance */
+            .neon-yellow { text-shadow: 0 0 10px #ffff00, 0 0 25px #ff00ff; }
+            .neon-text   { text-shadow: 0 0 8px #ff00ff, 0 0 20px #00ffff; }
         }
     </style>
 </head>
 <body class="bg-black text-white min-h-screen overflow-x-hidden">
 
     <!-- NAVBAR -->
-    <nav class="border-b border-[#00ffff]/30 bg-black/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-x-3">
-                <img src="logo.png" alt="SUBLIME CREATES Logo" class="h-14 w-auto logo-glow">
+    <nav class="border-b border-[#00ffff]/30 bg-black/90 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo + brand -->
+            <a href="#" class="flex items-center gap-x-2 shrink-0">
+                <img src="logo.png" alt="SUBLIME CREATES Logo" class="h-10 md:h-14 w-auto logo-glow">
                 <div>
-                    <h1 class="text-3xl font-bold neon-yellow tracking-[4px]">SUBLIME</h1>
-                    <p class="text-xs text-[#00ffff] -mt-1 tracking-[6px]">CREATES</p>
+                    <div class="text-lg md:text-3xl font-bold neon-yellow tracking-[2px] md:tracking-[4px]">SUBLIME</div>
+                    <div class="text-[9px] md:text-xs text-[#00ffff] -mt-1 tracking-[4px] md:tracking-[6px]">CREATES</div>
                 </div>
-            </div>
+            </a>
 
+            <!-- Desktop nav links -->
             <div class="hidden md:flex items-center gap-x-8 text-sm uppercase tracking-widest">
                 <a href="#services" class="hover:text-[#00ffff]">SERVICES</a>
-                <a href="#gallery" class="hover:text-[#00ffff]">GALLERY</a>
-                <a href="#shop" class="hover:text-[#00ffff]">SHOP</a>
-                <a href="#contact" class="hover:text-[#00ffff]">CONTACT</a>
+                <a href="#gallery"  class="hover:text-[#00ffff]">GALLERY</a>
+                <a href="#shop"     class="hover:text-[#00ffff]">SHOP</a>
+                <a href="#contact"  class="hover:text-[#00ffff]">CONTACT</a>
             </div>
 
-            <div class="flex items-center gap-x-2 bg-black border border-[#f7931a] rounded-full px-5 py-2 text-[#f7931a] text-xs uppercase font-bold">
-                <span class="text-3xl">₿</span>
-                <div>BTC +<br>LIGHTNING ⚡</div>
+            <div class="flex items-center gap-x-2">
+                <!-- BTC badge — abbreviated on mobile -->
+                <div class="flex items-center gap-x-1 bg-black border border-[#f7931a] rounded-full px-3 py-1 md:px-5 md:py-2 text-[#f7931a] font-bold">
+                    <span class="text-xl md:text-3xl">₿</span>
+                    <div class="hidden sm:block text-[9px] md:text-xs uppercase">BTC +<br>LIGHTNING ⚡</div>
+                </div>
+                <!-- Hamburger button (mobile only) -->
+                <button id="menuBtn" class="md:hidden p-2 text-[#00ffff]" aria-label="Menu">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
             </div>
+        </div>
+
+        <!-- Mobile dropdown menu -->
+        <div id="mobileMenu" class="mobile-menu md:hidden flex-col bg-black/95 border-t border-[#00ffff]/20 px-6 py-4 gap-y-4 text-sm uppercase tracking-widest">
+            <a href="#services" class="hover:text-[#00ffff] py-2" onclick="closeMenu()">SERVICES</a>
+            <a href="#gallery"  class="hover:text-[#00ffff] py-2" onclick="closeMenu()">GALLERY</a>
+            <a href="#shop"     class="hover:text-[#00ffff] py-2" onclick="closeMenu()">SHOP</a>
+            <a href="#contact"  class="hover:text-[#00ffff] py-2" onclick="closeMenu()">CONTACT</a>
         </div>
     </nav>
 
     <!-- HERO -->
     <header class="hero-bg min-h-screen flex items-center relative">
-        <!-- Retro scene layers -->
         <div class="retro-sky"></div>
         <div class="retro-stars"></div>
         <div class="retro-nebula"></div>
         <div class="retro-sun-halo"></div>
         <div class="retro-sun"></div>
-        <!-- Wireframe mountains -->
         <div class="retro-mountains">
             <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                 <defs>
@@ -328,29 +239,22 @@
                         <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                     </filter>
                 </defs>
-                <!-- Background mountain fills (dark) -->
                 <polygon points="0,320 0,220 120,100 240,180 360,60 480,160 580,40 680,140 780,20 880,120 980,50 1080,150 1180,80 1300,170 1440,90 1440,320" fill="#04000f"/>
-                <!-- Wireframe edge lines - back range -->
                 <polyline points="0,220 120,100 240,180 360,60 480,160 580,40 680,140 780,20 880,120 980,50 1080,150 1180,80 1300,170 1440,90" fill="none" stroke="#3300ff" stroke-width="1.5" opacity="0.6" filter="url(#glow)"/>
-                <!-- Internal wireframe lines back -->
                 <line x1="120" y1="100" x2="120" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
-                <line x1="360" y1="60" x2="360" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
-                <line x1="580" y1="40" x2="580" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
-                <line x1="780" y1="20" x2="780" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
-                <line x1="980" y1="50" x2="980" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="360" y1="60"  x2="360" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="580" y1="40"  x2="580" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="780" y1="20"  x2="780" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="980" y1="50"  x2="980" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="1180" y1="80" x2="1180" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
-                <!-- Foreground mountain fills -->
                 <polygon points="0,320 0,280 150,160 280,240 420,130 540,210 650,110 760,190 870,90 980,175 1100,105 1220,200 1340,140 1440,190 1440,320" fill="#02000a"/>
-                <!-- Wireframe edge lines - front range -->
                 <polyline points="0,280 150,160 280,240 420,130 540,210 650,110 760,190 870,90 980,175 1100,105 1220,200 1340,140 1440,190" fill="none" stroke="#0066ff" stroke-width="2" opacity="0.85" filter="url(#glow)"/>
-                <!-- Internal wireframe lines front -->
                 <line x1="150" y1="160" x2="150" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
                 <line x1="420" y1="130" x2="420" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
                 <line x1="650" y1="110" x2="650" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
-                <line x1="870" y1="90" x2="870" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
+                <line x1="870" y1="90"  x2="870" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
                 <line x1="1100" y1="105" x2="1100" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
                 <line x1="1340" y1="140" x2="1340" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
-                <!-- Cross lines on front mountains -->
                 <line x1="0" y1="280" x2="150" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="150" y1="160" x2="280" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="280" y1="240" x2="420" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
@@ -358,7 +262,7 @@
                 <line x1="540" y1="210" x2="650" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="650" y1="110" x2="760" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="760" y1="190" x2="870" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
-                <line x1="870" y1="90" x2="980" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="870" y1="90"  x2="980" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="980" y1="175" x2="1100" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="1100" y1="105" x2="1220" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
                 <line x1="1220" y1="200" x2="1340" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
@@ -366,59 +270,56 @@
             </svg>
         </div>
         <div class="retro-horizon"></div>
-        <!-- Neon grid floor -->
         <div class="retro-grid"><div class="retro-grid-inner"></div></div>
         <div class="scanline"></div>
 
-        <div class="max-w-7xl mx-auto px-6 pt-20 pb-24 relative z-10">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="max-w-7xl mx-auto px-5 pt-16 pb-32 md:pt-20 md:pb-24 relative z-10 w-full">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                 <!-- Left Content -->
-                <div class="space-y-8">
-                    <div class="inline-flex items-center gap-x-3 bg-black/70 border border-[#00ffff]/50 rounded-3xl px-6 py-3 text-sm uppercase tracking-widest">
-                        <span class="relative flex h-3 w-3">
+                <div class="space-y-5 md:space-y-8">
+                    <div class="inline-flex items-center gap-x-2 bg-black/70 border border-[#00ffff]/50 rounded-3xl px-4 py-2 text-[9px] md:text-sm uppercase tracking-widest">
+                        <span class="relative flex h-2 w-2 md:h-3 md:w-3">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ffff] opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-[#00ffff]"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-[#00ffff]"></span>
                         </span>
                         EST. 2023 • ALBERTA
                     </div>
 
-                    <h1 class="text-7xl md:text-8xl font-black leading-none neon-yellow tracking-[-4px]">
+                    <h1 class="text-5xl sm:text-6xl md:text-8xl font-black leading-none neon-yellow tracking-[-2px] md:tracking-[-4px]">
                         SUBLIME<br>CREATES
                     </h1>
 
-                    <p class="text-5xl md:text-6xl text-[#ff00ff] neon-text font-bold tracking-wider">
-                        METAL FABRICATION
+                    <p class="text-2xl sm:text-3xl md:text-6xl text-[#ff00ff] neon-text font-bold tracking-wide md:tracking-wider">
+                        METAL<br class="md:hidden">FABRICATION
                     </p>
 
-                    <div class="max-w-lg text-[#00ffff] text-xl leading-tight">
+                    <div class="text-[#00ffff] text-sm md:text-xl leading-relaxed">
                         Precision welding.<br>
                         Custom steel dreams.<br>
                         80s neon soul meets heavy metal.
                     </div>
 
-                    <div class="flex flex-wrap gap-6">
+                    <div class="flex flex-col sm:flex-row gap-3 md:gap-6">
                         <a href="#gallery"
-                           class="neon-button border-2 border-[#ff00ff] hover:border-[#00ffff] text-white px-12 py-7 text-lg uppercase font-bold rounded-3xl flex items-center gap-x-4">
+                           class="neon-button border-2 border-[#ff00ff] hover:border-[#00ffff] text-white px-6 py-4 md:px-12 md:py-7 text-sm md:text-lg uppercase font-bold rounded-2xl md:rounded-3xl text-center">
                             ⚡ SEE THE WORK
                         </a>
-
                         <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"
-                           class="neon-button bg-[#ff00ff] hover:bg-[#00ffff] text-black px-12 py-7 text-lg uppercase font-bold rounded-3xl flex items-center gap-x-4">
+                           class="neon-button bg-[#ff00ff] hover:bg-[#00ffff] text-black px-6 py-4 md:px-12 md:py-7 text-sm md:text-lg uppercase font-bold rounded-2xl md:rounded-3xl text-center">
                             SHOP ON ETSY →
                         </a>
                     </div>
 
-                    <div class="flex gap-x-8 text-sm pt-4">
+                    <div class="flex flex-col gap-1 md:flex-row md:gap-x-8 text-[9px] md:text-sm pt-2">
                         <div>✓ CUSTOM FABRICATION</div>
                         <div>✓ WELDING MASTERY</div>
                         <div>✓ BITCOIN &amp; LIGHTNING ACCEPTED</div>
                     </div>
                 </div>
 
-                <!-- Logo -->
+                <!-- Logo (desktop only) -->
                 <div class="hidden md:flex justify-center pt-12">
-                    <img src="logo_cyan.png" alt="SUBLIME CREATES Logo"
-                         class="w-96 h-auto hero-logo-cyan">
+                    <img src="logo_cyan.png" alt="SUBLIME CREATES Logo" class="w-96 h-auto hero-logo-cyan">
                 </div>
             </div>
         </div>
@@ -427,52 +328,52 @@
     </header>
 
     <!-- SERVICES -->
-    <section id="services" class="max-w-7xl mx-auto px-6 py-20 bg-black">
-        <div class="text-center mb-16">
-            <span class="text-[#00ffff] uppercase tracking-widest text-sm">CAPABILITIES</span>
-            <h2 class="text-5xl neon-yellow">RETRO-FUTURE METALWORK</h2>
+    <section id="services" class="max-w-7xl mx-auto px-5 py-14 md:py-20">
+        <div class="text-center mb-10 md:mb-16">
+            <span class="text-[#00ffff] uppercase tracking-widest text-xs md:text-sm">CAPABILITIES</span>
+            <h2 class="text-2xl sm:text-3xl md:text-5xl neon-yellow mt-2">RETRO-FUTURE METALWORK</h2>
         </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-3xl p-10 card-hover">
-                <div class="text-6xl mb-6">⚒️</div>
-                <h3 class="text-2xl neon-text mb-4">PRECISION WELDING</h3>
-                <p class="text-[#00ffff]/80">TIG • MIG • Stick. Clean work on steel, stainless & aluminum.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
+            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-2xl md:rounded-3xl p-7 md:p-10 card-hover">
+                <div class="text-5xl md:text-6xl mb-5 md:mb-6">⚒️</div>
+                <h3 class="text-lg md:text-2xl neon-text mb-3 md:mb-4">PRECISION WELDING</h3>
+                <p class="text-[#00ffff]/80 text-xs md:text-sm leading-relaxed">TIG • MIG • Stick. Clean work on steel, stainless &amp; aluminum.</p>
             </div>
-            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-3xl p-10 card-hover">
-                <div class="text-6xl mb-6">🔥</div>
-                <h3 class="text-2xl neon-text mb-4">CUSTOM FABRICATION</h3>
-                <p class="text-[#00ffff]/80">One-off sculptures, custom fab & metal art.</p>
+            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-2xl md:rounded-3xl p-7 md:p-10 card-hover">
+                <div class="text-5xl md:text-6xl mb-5 md:mb-6">🔥</div>
+                <h3 class="text-lg md:text-2xl neon-text mb-3 md:mb-4">CUSTOM FABRICATION</h3>
+                <p class="text-[#00ffff]/80 text-xs md:text-sm leading-relaxed">One-off sculptures, custom fab &amp; metal art.</p>
             </div>
-            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-3xl p-10 card-hover">
-                <div class="text-6xl mb-6">🌴</div>
-                <h3 class="text-2xl neon-text mb-4">BASED<br>BUILDS</h3>
-                <p class="text-[#00ffff]/80">LED signs, CNC Plasma cutting, Prototyping.</p>
+            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-2xl md:rounded-3xl p-7 md:p-10 card-hover">
+                <div class="text-5xl md:text-6xl mb-5 md:mb-6">🌴</div>
+                <h3 class="text-lg md:text-2xl neon-text mb-3 md:mb-4">BASED<br>BUILDS</h3>
+                <p class="text-[#00ffff]/80 text-xs md:text-sm leading-relaxed">LED signs, CNC Plasma cutting, Prototyping.</p>
             </div>
         </div>
     </section>
 
     <!-- INSTAGRAM GALLERY -->
-    <section id="gallery" class="py-20 bg-zinc-950">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex justify-between items-end mb-12">
+    <section id="gallery" class="py-14 md:py-20 bg-zinc-950">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8 md:mb-12">
                 <div>
-                    <span class="text-[#ff00ff] uppercase text-sm tracking-widest">FROM THE GRID</span>
-                    <h2 class="text-5xl neon-yellow">@sublime_creates</h2>
+                    <span class="text-[#ff00ff] uppercase text-xs md:text-sm tracking-widest">FROM THE GRID</span>
+                    <h2 class="text-2xl sm:text-3xl md:text-5xl neon-yellow mt-1">@sublime_creates</h2>
                 </div>
-                <a href="https://www.instagram.com/sublime_creates/" target="_blank" class="text-[#00ffff] hover:text-white flex items-center gap-x-3">
-                    <i class="fab fa-instagram text-3xl"></i>
-                    <span class="uppercase text-sm">View on Instagram</span>
+                <a href="https://www.instagram.com/sublime_creates/" target="_blank" class="text-[#00ffff] hover:text-white flex items-center gap-x-2 text-sm shrink-0">
+                    <i class="fab fa-instagram text-2xl md:text-3xl"></i>
+                    <span class="uppercase text-xs md:text-sm">View on Instagram</span>
                 </a>
             </div>
-            <div class="grid md:grid-cols-3 gap-6 items-start">
-                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow: 0 0 20px rgba(255,0,255,0.2);">
-                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/Cg7h-YOvB_T/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin:0; max-width:100%; min-width:0; padding:0; width:100%;"></blockquote>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start">
+                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow:0 0 20px rgba(255,0,255,0.2)">
+                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/Cg7h-YOvB_T/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF;border:0;margin:0;max-width:100%;min-width:0;padding:0;width:100%;"></blockquote>
                 </div>
-                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow: 0 0 20px rgba(255,0,255,0.2);">
-                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/Cba7aryo4xY/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin:0; max-width:100%; min-width:0; padding:0; width:100%;"></blockquote>
+                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow:0 0 20px rgba(255,0,255,0.2)">
+                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/Cba7aryo4xY/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF;border:0;margin:0;max-width:100%;min-width:0;padding:0;width:100%;"></blockquote>
                 </div>
-                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow: 0 0 20px rgba(255,0,255,0.2);">
-                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/BirkJXZgdFW/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin:0; max-width:100%; min-width:0; padding:0; width:100%;"></blockquote>
+                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow:0 0 20px rgba(255,0,255,0.2)">
+                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/BirkJXZgdFW/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF;border:0;margin:0;max-width:100%;min-width:0;padding:0;width:100%;"></blockquote>
                 </div>
             </div>
         </div>
@@ -480,97 +381,116 @@
     <script async src="//www.instagram.com/embed.js"></script>
 
     <!-- ETSY SHOP -->
-    <section id="shop" class="max-w-7xl mx-auto px-6 py-20">
-        <div class="flex justify-between items-end mb-12">
+    <section id="shop" class="max-w-7xl mx-auto px-5 py-14 md:py-20">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8 md:mb-12">
             <div>
-                <span class="text-[#ffff00] uppercase text-sm tracking-widest">FRESH DROPS</span>
-                <h2 class="text-5xl neon-yellow">SHOP ON ETSY</h2>
+                <span class="text-[#ffff00] uppercase text-xs md:text-sm tracking-widest">FRESH DROPS</span>
+                <h2 class="text-2xl sm:text-3xl md:text-5xl neon-yellow mt-1">SHOP ON ETSY</h2>
             </div>
             <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"
-               class="border border-[#ffff00] hover:bg-[#ffff00] hover:text-black px-8 py-5 rounded-3xl uppercase text-sm font-bold">
+               class="border border-[#ffff00] hover:bg-[#ffff00] hover:text-black px-5 py-3 md:px-8 md:py-5 rounded-2xl md:rounded-3xl uppercase text-xs md:text-sm font-bold shrink-0 text-center">
                 VISIT FULL SHOP →
             </a>
         </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <a href="https://www.etsy.com/ca/listing/4485604585/the-bitcoin-sign" target="_blank" class="bg-zinc-950 border border-[#f7931a]/60 rounded-3xl overflow-hidden card-hover block" style="box-shadow: 0 0 20px rgba(247,147,26,0.15);">
-                <div class="w-full h-64 overflow-hidden">
-                    <img src="https://i.etsystatic.com/65426071/r/il/17b46c/7892956748/il_1588xN.7892956748_mcx8.jpg" alt="The Bitcoin Sign" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
+            <a href="https://www.etsy.com/ca/listing/4485604585/the-bitcoin-sign" target="_blank"
+               class="bg-zinc-950 border border-[#f7931a]/60 rounded-2xl md:rounded-3xl overflow-hidden card-hover block"
+               style="box-shadow:0 0 20px rgba(247,147,26,0.15)">
+                <div class="w-full h-52 md:h-64 overflow-hidden">
+                    <img src="https://i.etsystatic.com/65426071/r/il/17b46c/7892956748/il_1588xN.7892956748_mcx8.jpg"
+                         alt="The Bitcoin Sign" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
                 </div>
-                <div class="p-6">
-                    <h3 class="text-xl" style="color: #f7931a; text-shadow: 0 0 10px #f7931a80;">THE BITCOIN SIGN</h3>
-                    <p class="text-[#00ffff]/70 text-sm mt-2">Custom welded Bitcoin sign. Hand-crafted metal wall art.</p>
-                    <div class="mt-6 block text-center py-4 rounded-2xl text-xs uppercase font-bold" style="border: 1px solid #f7931a; color: #f7931a;">BUY ON ETSY →</div>
-                </div>
-            </a>
-            <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank" class="bg-zinc-950 border border-[#ffff00]/30 rounded-3xl overflow-hidden card-hover block">
-                <div class="w-full h-64 bg-zinc-900 flex items-center justify-center text-6xl">⚙️</div>
-                <div class="p-6">
-                    <h3 class="text-xl">WELDED SCULPTURES</h3>
-                    <p class="text-[#00ffff]/70 text-sm mt-2">Industrial art meets creative vision.</p>
-                    <div class="mt-6 block text-center py-4 border border-[#ffff00] rounded-2xl text-xs uppercase">BUY ON ETSY</div>
+                <div class="p-5 md:p-6">
+                    <h3 class="text-base md:text-xl" style="color:#f7931a;text-shadow:0 0 10px #f7931a80;">THE BITCOIN SIGN</h3>
+                    <p class="text-[#00ffff]/70 text-xs md:text-sm mt-2">Custom welded Bitcoin sign. Hand-crafted metal wall art.</p>
+                    <div class="mt-4 md:mt-6 text-center py-3 md:py-4 rounded-xl md:rounded-2xl text-xs uppercase font-bold"
+                         style="border:1px solid #f7931a;color:#f7931a;">BUY ON ETSY →</div>
                 </div>
             </a>
-            <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank" class="bg-zinc-950 border border-[#ffff00]/30 rounded-3xl overflow-hidden card-hover block">
-                <div class="w-full h-64 bg-zinc-900 flex items-center justify-center text-6xl">🔥</div>
-                <div class="p-6">
-                    <h3 class="text-xl">CUSTOM FABRICATION</h3>
-                    <p class="text-[#00ffff]/70 text-sm mt-2">Bring your idea to life. Custom orders welcome.</p>
-                    <div class="mt-6 block text-center py-4 border border-[#ffff00] rounded-2xl text-xs uppercase">BUY ON ETSY</div>
+            <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"
+               class="bg-zinc-950 border border-[#ffff00]/30 rounded-2xl md:rounded-3xl overflow-hidden card-hover block">
+                <div class="w-full h-52 md:h-64 bg-zinc-900 flex items-center justify-center text-6xl">⚙️</div>
+                <div class="p-5 md:p-6">
+                    <h3 class="text-base md:text-xl">WELDED SCULPTURES</h3>
+                    <p class="text-[#00ffff]/70 text-xs md:text-sm mt-2">Industrial art meets creative vision.</p>
+                    <div class="mt-4 md:mt-6 text-center py-3 md:py-4 border border-[#ffff00] rounded-xl md:rounded-2xl text-xs uppercase">BUY ON ETSY</div>
+                </div>
+            </a>
+            <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"
+               class="bg-zinc-950 border border-[#ffff00]/30 rounded-2xl md:rounded-3xl overflow-hidden card-hover block">
+                <div class="w-full h-52 md:h-64 bg-zinc-900 flex items-center justify-center text-6xl">🔥</div>
+                <div class="p-5 md:p-6">
+                    <h3 class="text-base md:text-xl">CUSTOM FABRICATION</h3>
+                    <p class="text-[#00ffff]/70 text-xs md:text-sm mt-2">Bring your idea to life. Custom orders welcome.</p>
+                    <div class="mt-4 md:mt-6 text-center py-3 md:py-4 border border-[#ffff00] rounded-xl md:rounded-2xl text-xs uppercase">BUY ON ETSY</div>
                 </div>
             </a>
         </div>
     </section>
 
     <!-- BITCOIN SECTION -->
-    <section class="bg-gradient-to-r from-[#f7931a]/10 to-black py-16 border-y border-[#f7931a]/30">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <div class="flex justify-center mb-6 text-8xl">₿</div>
-            <h3 class="text-5xl neon-yellow">WE ACCEPT BITCOIN &amp; LIGHTNING NETWORK ⚡</h3>
-            <p class="mt-4 text-xl text-[#00ffff]">Fast • Private • No fees</p>
+    <section class="bg-gradient-to-r from-[#f7931a]/10 to-black py-12 md:py-16 border-y border-[#f7931a]/30">
+        <div class="max-w-7xl mx-auto px-5 text-center">
+            <div class="flex justify-center mb-4 md:mb-6 text-6xl md:text-8xl">₿</div>
+            <h3 class="text-xl sm:text-2xl md:text-5xl neon-yellow leading-snug">WE ACCEPT BITCOIN &amp; LIGHTNING NETWORK ⚡</h3>
+            <p class="mt-3 md:mt-4 text-sm md:text-xl text-[#00ffff]">Fast • Private • No fees</p>
         </div>
     </section>
 
     <!-- CONTACT -->
-    <section id="contact" class="max-w-7xl mx-auto px-6 py-20">
-        <div class="bg-zinc-950 border border-[#00ffff]/40 rounded-3xl p-12 md:p-16">
-            <div class="grid md:grid-cols-2 gap-12">
+    <section id="contact" class="max-w-7xl mx-auto px-5 py-14 md:py-20">
+        <div class="bg-zinc-950 border border-[#00ffff]/40 rounded-2xl md:rounded-3xl p-6 sm:p-10 md:p-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                 <div>
-                    <h2 class="text-5xl neon-yellow mb-6">GET IN TOUCH</h2>
-                    <p class="text-[#00ffff]">Custom quotes • Bitcoin Lightning invoices • Project ideas</p>
-                    <div class="mt-12">
-                        <a href="mailto:sublimecreates@gmail.com" class="text-xl text-[#00ffff] hover:text-white">sublimecreates@gmail.com</a>
+                    <h2 class="text-2xl sm:text-3xl md:text-5xl neon-yellow mb-4 md:mb-6">GET IN TOUCH</h2>
+                    <p class="text-[#00ffff] text-xs md:text-base leading-relaxed">Custom quotes • Bitcoin Lightning invoices • Project ideas</p>
+                    <div class="mt-6 md:mt-12">
+                        <a href="mailto:sublimecreates@gmail.com" class="text-sm md:text-xl text-[#00ffff] hover:text-white break-all">sublimecreates@gmail.com</a>
                     </div>
                 </div>
-                <form onsubmit="handleSubmit(event)" class="space-y-6">
-                    <input type="text" id="name" placeholder="YOUR NAME" class="w-full bg-transparent border border-[#00ffff]/40 rounded-2xl px-6 py-5 text-sm uppercase outline-none">
-                    <input type="email" id="email" placeholder="YOUR EMAIL" class="w-full bg-transparent border border-[#00ffff]/40 rounded-2xl px-6 py-5 text-sm uppercase outline-none">
-                    <textarea id="message" rows="5" placeholder="DESCRIBE YOUR PROJECT..." class="w-full bg-transparent border border-[#00ffff]/40 rounded-3xl px-6 py-5 text-sm uppercase outline-none"></textarea>
-                    <button type="submit" class="neon-button w-full bg-[#ff00ff] hover:bg-[#00ffff] text-black py-8 text-xl uppercase font-bold rounded-3xl">SEND MESSAGE</button>
+                <form onsubmit="handleSubmit(event)" class="space-y-4 md:space-y-6">
+                    <input type="text" id="name" placeholder="YOUR NAME"
+                           class="w-full bg-transparent border border-[#00ffff]/40 rounded-xl md:rounded-2xl px-5 py-4 text-xs md:text-sm uppercase outline-none">
+                    <input type="email" id="email" placeholder="YOUR EMAIL"
+                           class="w-full bg-transparent border border-[#00ffff]/40 rounded-xl md:rounded-2xl px-5 py-4 text-xs md:text-sm uppercase outline-none">
+                    <textarea id="message" rows="4" placeholder="DESCRIBE YOUR PROJECT..."
+                              class="w-full bg-transparent border border-[#00ffff]/40 rounded-xl md:rounded-3xl px-5 py-4 text-xs md:text-sm uppercase outline-none"></textarea>
+                    <button type="submit"
+                            class="neon-button w-full bg-[#ff00ff] hover:bg-[#00ffff] text-black py-5 md:py-8 text-sm md:text-xl uppercase font-bold rounded-2xl md:rounded-3xl">
+                        SEND MESSAGE
+                    </button>
                 </form>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-black py-12 border-t border-[#ff00ff]/30">
-        <div class="max-w-7xl mx-auto px-6 text-xs text-[#00ffff] flex flex-col md:flex-row justify-between items-center gap-4">
+    <footer class="bg-black py-10 border-t border-[#ff00ff]/30">
+        <div class="max-w-7xl mx-auto px-5 text-[10px] md:text-xs text-[#00ffff] flex flex-col items-center gap-4 text-center">
             <div>© SUBLIME CREATES 2026 • METAL FABRICATION • ALBERTA</div>
-            <div class="flex gap-x-6">
-                <a href="https://www.instagram.com/sublime_creates/" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"><i class="fab fa-etsy"></i></a>
+            <div class="flex gap-x-6 text-2xl">
+                <a href="https://www.instagram.com/sublime_creates/" target="_blank" class="hover:text-[#ff00ff]"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank" class="hover:text-[#ffff00]"><i class="fab fa-etsy"></i></a>
             </div>
             <div>POWERED BY NEON • STEEL • BITCOIN ⚡</div>
         </div>
     </footer>
 
     <script>
+        // Hamburger menu
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+        function closeMenu() { mobileMenu.classList.remove('open'); }
+
+        // Contact form
         function handleSubmit(e) {
             e.preventDefault();
-            const name = document.getElementById('name').value || 'Customer';
-            const email = document.getElementById('email').value || '';
+            const name    = document.getElementById('name').value    || 'Customer';
+            const email   = document.getElementById('email').value   || '';
             const message = document.getElementById('message').value || '';
             const subject = encodeURIComponent(`Project inquiry from ${name}`);
-            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+            const body    = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
             window.location.href = `mailto:sublimecreates@gmail.com?subject=${subject}&body=${body}`;
             e.target.reset();
         }
