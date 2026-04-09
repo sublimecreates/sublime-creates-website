@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUBLIME CREATES • METAL FABRICATION</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            font-family: 'Press Start 2P', system-ui;
+        }
+
+        .hero-bg {
+            background: #04000f;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Kill old grid overlay */
+        .hero-bg::before { display: none; }
+
+        /* ── RETRO SCENE LAYERS ── */
+
+        /* 1. Deep space sky */
+        .retro-sky {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 0%, #3a005a 0%, #1a0035 40%, #04000f 80%),
+                radial-gradient(ellipse 40% 30% at 20% 20%, #5500aa44 0%, transparent 70%),
+                radial-gradient(ellipse 40% 30% at 80% 15%, #220066aa 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        /* 2. Stars */
+        .retro-stars {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background-image:
+                radial-gradient(1px 1px at 10% 8%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 22% 3%, #fff 100%, transparent),
+                radial-gradient(1.5px 1.5px at 35% 12%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 48% 5%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 60% 9%, #fff 100%, transparent),
+                radial-gradient(1.5px 1.5px at 72% 4%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 85% 11%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 92% 7%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 5% 18%, #cceeff 100%, transparent),
+                radial-gradient(1px 1px at 18% 22%, #fff 100%, transparent),
+                radial-gradient(2px 2px at 28% 17%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 42% 25%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 55% 19%, #cceeff 100%, transparent),
+                radial-gradient(1.5px 1.5px at 66% 28%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 78% 21%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 90% 16%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 8% 32%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 33% 36%, #fff 100%, transparent),
+                radial-gradient(1.5px 1.5px at 50% 30%, #eeddff 100%, transparent),
+                radial-gradient(1px 1px at 70% 33%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 88% 38%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 15% 42%, #fff 100%, transparent),
+                radial-gradient(2px 2px at 45% 44%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 62% 40%, #cceeff 100%, transparent),
+                radial-gradient(1px 1px at 95% 43%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 3% 50%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 25% 52%, #fff 100%, transparent),
+                radial-gradient(1.5px 1.5px at 38% 48%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 58% 55%, #fff 100%, transparent),
+                radial-gradient(1px 1px at 80% 50%, #eeddff 100%, transparent);
+            background-size: 100% 100%;
+            animation: twinkle 6s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0%   { opacity: 0.7; }
+            50%  { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        /* 3. Nebula clouds */
+        .retro-nebula {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background:
+                radial-gradient(ellipse 55% 25% at 15% 25%, #6600cc33 0%, transparent 70%),
+                radial-gradient(ellipse 45% 20% at 85% 30%, #330099aa 0%, transparent 70%),
+                radial-gradient(ellipse 30% 15% at 50% 10%, #aa00ff22 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* 4. Sun */
+        .retro-sun {
+            position: absolute;
+            width: min(38vw, 340px);
+            height: min(38vw, 340px);
+            border-radius: 50%;
+            left: 50%;
+            top: 6%;
+            transform: translateX(-50%);
+            z-index: 3;
+            background: linear-gradient(
+                to bottom,
+                #ffe800 0%,
+                #ffcc00 18%,
+                #ff9900 35%,
+                #ff6600 50%,
+                #ff3355 65%,
+                #cc1155 80%,
+                #990044 100%
+            );
+            box-shadow:
+                0 0 60px #ffcc0099,
+                0 0 120px #ff660066,
+                0 0 220px #ff005544,
+                0 0 350px #cc003322;
+            overflow: hidden;
+        }
+        /* Horizontal stripes on lower half of sun */
+        .retro-sun::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 62%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 7px,
+                rgba(10, 0, 5, 0.75) 7px,
+                rgba(10, 0, 5, 0.75) 11px
+            );
+        }
+        /* Sun glow halo behind */
+        .retro-sun-halo {
+            position: absolute;
+            width: min(60vw, 540px);
+            height: min(60vw, 540px);
+            border-radius: 50%;
+            left: 50%;
+            top: calc(6% - 11%);
+            transform: translateX(-50%);
+            z-index: 2;
+            background: radial-gradient(circle, #ff660033 0%, #cc003311 40%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* 5. Mountains (SVG injected via HTML) */
+        .retro-mountains {
+            position: absolute;
+            bottom: 35%;
+            left: 0; right: 0;
+            z-index: 4;
+            pointer-events: none;
+        }
+        .retro-mountains svg { width: 100%; height: auto; display: block; }
+
+        /* 6. Horizon glow line */
+        .retro-horizon {
+            position: absolute;
+            bottom: 35%;
+            left: 0; right: 0;
+            height: 3px;
+            z-index: 5;
+            background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, #ff00ff, transparent);
+            box-shadow: 0 0 12px #ff00ff, 0 0 30px #ff00ff88;
+            pointer-events: none;
+        }
+
+        /* 7. Neon perspective grid floor */
+        .retro-grid {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 36%;
+            z-index: 4;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .retro-grid-inner {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to bottom, #04000f 0%, transparent 20%),
+                linear-gradient(rgba(0, 200, 255, 0.7) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 200, 255, 0.7) 1px, transparent 1px);
+            background-size: 100% 100%, 100px 80px, 80px 80px;
+            transform: perspective(300px) rotateX(55deg);
+            transform-origin: top center;
+            animation: grid-scroll 4s linear infinite;
+        }
+        @keyframes grid-scroll {
+            0%   { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: 0 0, 0 80px, 0 0; }
+        }
+        /* grid side glow lines */
+        .retro-grid::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg,
+                rgba(255, 0, 255, 0.25) 0%, transparent 20%,
+                transparent 80%, rgba(255, 0, 255, 0.25) 100%);
+            z-index: 1;
+        }
+        /* fade top of grid into sky */
+        .retro-grid::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 40%;
+            background: linear-gradient(to bottom, #04000f, transparent);
+            z-index: 2;
+        }
+
+        .neon-text {
+            text-shadow:
+                0 0 12px #ff00ff,
+                0 0 25px #ff00ff,
+                0 0 50px #00ffff,
+                0 0 80px #ffff00;
+        }
+
+        .neon-yellow {
+            text-shadow:
+                0 0 20px #ffff00,
+                0 0 45px #ffff00,
+                0 0 75px #ff00ff;
+        }
+
+        .logo-glow {
+            filter: drop-shadow(0 0 50px #ff00ff) drop-shadow(0 0 100px #00ffff);
+        }
+
+        .hero-logo-cyan {
+            filter: hue-rotate(150deg) saturate(6) brightness(1.2) drop-shadow(0 0 20px #00ffff) drop-shadow(0 0 40px #00ffff88);
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.06) 50%);
+            background-size: 100% 8px;
+            pointer-events: none;
+            animation: scan 8s linear infinite;
+            opacity: 0.45;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-180%); }
+            100% { transform: translateY(400%); }
+        }
+
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 50px #ff00ff;
+        }
+
+        .neon-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neon-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 40%;
+            height: 300%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: skewX(-25deg);
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            100% { transform: translateX(400%); }
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen overflow-x-hidden">
+
+    <!-- NAVBAR -->
+    <nav class="border-b border-[#00ffff]/30 bg-black/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-x-3">
+                <img src="logo.png" alt="SUBLIME CREATES Logo" class="h-14 w-auto logo-glow">
+                <div>
+                    <h1 class="text-3xl font-bold neon-yellow tracking-[4px]">SUBLIME</h1>
+                    <p class="text-xs text-[#00ffff] -mt-1 tracking-[6px]">CREATES</p>
+                </div>
+            </div>
+
+            <div class="hidden md:flex items-center gap-x-8 text-sm uppercase tracking-widest">
+                <a href="#services" class="hover:text-[#00ffff]">SERVICES</a>
+                <a href="#gallery" class="hover:text-[#00ffff]">GALLERY</a>
+                <a href="#shop" class="hover:text-[#00ffff]">SHOP</a>
+                <a href="#contact" class="hover:text-[#00ffff]">CONTACT</a>
+            </div>
+
+            <div class="flex items-center gap-x-2 bg-black border border-[#f7931a] rounded-full px-5 py-2 text-[#f7931a] text-xs uppercase font-bold">
+                <span class="text-3xl">₿</span>
+                <div>BTC +<br>LIGHTNING ⚡</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero-bg min-h-screen flex items-center relative">
+        <!-- Retro scene layers -->
+        <div class="retro-sky"></div>
+        <div class="retro-stars"></div>
+        <div class="retro-nebula"></div>
+        <div class="retro-sun-halo"></div>
+        <div class="retro-sun"></div>
+        <!-- Wireframe mountains -->
+        <div class="retro-mountains">
+            <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <defs>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="2" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+                <!-- Background mountain fills (dark) -->
+                <polygon points="0,320 0,220 120,100 240,180 360,60 480,160 580,40 680,140 780,20 880,120 980,50 1080,150 1180,80 1300,170 1440,90 1440,320" fill="#04000f"/>
+                <!-- Wireframe edge lines - back range -->
+                <polyline points="0,220 120,100 240,180 360,60 480,160 580,40 680,140 780,20 880,120 980,50 1080,150 1180,80 1300,170 1440,90" fill="none" stroke="#3300ff" stroke-width="1.5" opacity="0.6" filter="url(#glow)"/>
+                <!-- Internal wireframe lines back -->
+                <line x1="120" y1="100" x2="120" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="360" y1="60" x2="360" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="580" y1="40" x2="580" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="780" y1="20" x2="780" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="980" y1="50" x2="980" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="1180" y1="80" x2="1180" y2="320" stroke="#2200cc" stroke-width="0.8" opacity="0.4"/>
+                <!-- Foreground mountain fills -->
+                <polygon points="0,320 0,280 150,160 280,240 420,130 540,210 650,110 760,190 870,90 980,175 1100,105 1220,200 1340,140 1440,190 1440,320" fill="#02000a"/>
+                <!-- Wireframe edge lines - front range -->
+                <polyline points="0,280 150,160 280,240 420,130 540,210 650,110 760,190 870,90 980,175 1100,105 1220,200 1340,140 1440,190" fill="none" stroke="#0066ff" stroke-width="2" opacity="0.85" filter="url(#glow)"/>
+                <!-- Internal wireframe lines front -->
+                <line x1="150" y1="160" x2="150" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
+                <line x1="420" y1="130" x2="420" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
+                <line x1="650" y1="110" x2="650" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
+                <line x1="870" y1="90" x2="870" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
+                <line x1="1100" y1="105" x2="1100" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
+                <line x1="1340" y1="140" x2="1340" y2="320" stroke="#0044ee" stroke-width="1" opacity="0.5"/>
+                <!-- Cross lines on front mountains -->
+                <line x1="0" y1="280" x2="150" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="150" y1="160" x2="280" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="280" y1="240" x2="420" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="420" y1="130" x2="540" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="540" y1="210" x2="650" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="650" y1="110" x2="760" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="760" y1="190" x2="870" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="870" y1="90" x2="980" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="980" y1="175" x2="1100" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="1100" y1="105" x2="1220" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="1220" y1="200" x2="1340" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+                <line x1="1340" y1="140" x2="1440" y2="320" stroke="#0033cc" stroke-width="0.8" opacity="0.4"/>
+            </svg>
+        </div>
+        <div class="retro-horizon"></div>
+        <!-- Neon grid floor -->
+        <div class="retro-grid"><div class="retro-grid-inner"></div></div>
+        <div class="scanline"></div>
+
+        <div class="max-w-7xl mx-auto px-6 pt-20 pb-24 relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Left Content -->
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-x-3 bg-black/70 border border-[#00ffff]/50 rounded-3xl px-6 py-3 text-sm uppercase tracking-widest">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ffff] opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-[#00ffff]"></span>
+                        </span>
+                        EST. 2023 • ALBERTA
+                    </div>
+
+                    <h1 class="text-7xl md:text-8xl font-black leading-none neon-yellow tracking-[-4px]">
+                        SUBLIME<br>CREATES
+                    </h1>
+
+                    <p class="text-5xl md:text-6xl text-[#ff00ff] neon-text font-bold tracking-wider">
+                        METAL FABRICATION
+                    </p>
+
+                    <div class="max-w-lg text-[#00ffff] text-xl leading-tight">
+                        Precision welding.<br>
+                        Custom steel dreams.<br>
+                        80s neon soul meets heavy metal.
+                    </div>
+
+                    <div class="flex flex-wrap gap-6">
+                        <a href="#gallery"
+                           class="neon-button border-2 border-[#ff00ff] hover:border-[#00ffff] text-white px-12 py-7 text-lg uppercase font-bold rounded-3xl flex items-center gap-x-4">
+                            ⚡ SEE THE WORK
+                        </a>
+
+                        <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"
+                           class="neon-button bg-[#ff00ff] hover:bg-[#00ffff] text-black px-12 py-7 text-lg uppercase font-bold rounded-3xl flex items-center gap-x-4">
+                            SHOP ON ETSY →
+                        </a>
+                    </div>
+
+                    <div class="flex gap-x-8 text-sm pt-4">
+                        <div>✓ CUSTOM FABRICATION</div>
+                        <div>✓ WELDING MASTERY</div>
+                        <div>✓ BITCOIN &amp; LIGHTNING ACCEPTED</div>
+                    </div>
+                </div>
+
+                <!-- Logo -->
+                <div class="hidden md:flex justify-center pt-12">
+                    <img src="logo_cyan.png" alt="SUBLIME CREATES Logo"
+                         class="w-96 h-auto hero-logo-cyan">
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-black to-transparent"></div>
+    </header>
+
+    <!-- SERVICES -->
+    <section id="services" class="max-w-7xl mx-auto px-6 py-20 bg-black">
+        <div class="text-center mb-16">
+            <span class="text-[#00ffff] uppercase tracking-widest text-sm">CAPABILITIES</span>
+            <h2 class="text-5xl neon-yellow">RETRO-FUTURE METALWORK</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-3xl p-10 card-hover">
+                <div class="text-6xl mb-6">⚒️</div>
+                <h3 class="text-2xl neon-text mb-4">PRECISION WELDING</h3>
+                <p class="text-[#00ffff]/80">TIG • MIG • Stick. Clean work on steel, stainless & aluminum.</p>
+            </div>
+            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-3xl p-10 card-hover">
+                <div class="text-6xl mb-6">🔥</div>
+                <h3 class="text-2xl neon-text mb-4">CUSTOM FABRICATION</h3>
+                <p class="text-[#00ffff]/80">One-off sculptures, custom fab & metal art.</p>
+            </div>
+            <div class="bg-zinc-950 border border-[#ff00ff]/30 rounded-3xl p-10 card-hover">
+                <div class="text-6xl mb-6">🌴</div>
+                <h3 class="text-2xl neon-text mb-4">BASED<br>BUILDS</h3>
+                <p class="text-[#00ffff]/80">LED signs, CNC Plasma cutting, Prototyping.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- INSTAGRAM GALLERY -->
+    <section id="gallery" class="py-20 bg-zinc-950">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <span class="text-[#ff00ff] uppercase text-sm tracking-widest">FROM THE GRID</span>
+                    <h2 class="text-5xl neon-yellow">@sublime_creates</h2>
+                </div>
+                <a href="https://www.instagram.com/sublime_creates/" target="_blank" class="text-[#00ffff] hover:text-white flex items-center gap-x-3">
+                    <i class="fab fa-instagram text-3xl"></i>
+                    <span class="uppercase text-sm">View on Instagram</span>
+                </a>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6 items-start">
+                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow: 0 0 20px rgba(255,0,255,0.2);">
+                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/Cg7h-YOvB_T/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin:0; max-width:100%; min-width:0; padding:0; width:100%;"></blockquote>
+                </div>
+                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow: 0 0 20px rgba(255,0,255,0.2);">
+                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/Cba7aryo4xY/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin:0; max-width:100%; min-width:0; padding:0; width:100%;"></blockquote>
+                </div>
+                <div class="border-2 border-[#ff00ff]/40 rounded-xl overflow-hidden" style="box-shadow: 0 0 20px rgba(255,0,255,0.2);">
+                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/BirkJXZgdFW/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; margin:0; max-width:100%; min-width:0; padding:0; width:100%;"></blockquote>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script async src="//www.instagram.com/embed.js"></script>
+
+    <!-- ETSY SHOP -->
+    <section id="shop" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <span class="text-[#ffff00] uppercase text-sm tracking-widest">FRESH DROPS</span>
+                <h2 class="text-5xl neon-yellow">SHOP ON ETSY</h2>
+            </div>
+            <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"
+               class="border border-[#ffff00] hover:bg-[#ffff00] hover:text-black px-8 py-5 rounded-3xl uppercase text-sm font-bold">
+                VISIT FULL SHOP →
+            </a>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <a href="https://www.etsy.com/ca/listing/4485604585/the-bitcoin-sign" target="_blank" class="bg-zinc-950 border border-[#f7931a]/60 rounded-3xl overflow-hidden card-hover block" style="box-shadow: 0 0 20px rgba(247,147,26,0.15);">
+                <div class="w-full h-64 overflow-hidden">
+                    <img src="https://i.etsystatic.com/65426071/r/il/17b46c/7892956748/il_1588xN.7892956748_mcx8.jpg" alt="The Bitcoin Sign" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl" style="color: #f7931a; text-shadow: 0 0 10px #f7931a80;">THE BITCOIN SIGN</h3>
+                    <p class="text-[#00ffff]/70 text-sm mt-2">Custom welded Bitcoin sign. Hand-crafted metal wall art.</p>
+                    <div class="mt-6 block text-center py-4 rounded-2xl text-xs uppercase font-bold" style="border: 1px solid #f7931a; color: #f7931a;">BUY ON ETSY →</div>
+                </div>
+            </a>
+            <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank" class="bg-zinc-950 border border-[#ffff00]/30 rounded-3xl overflow-hidden card-hover block">
+                <div class="w-full h-64 bg-zinc-900 flex items-center justify-center text-6xl">⚙️</div>
+                <div class="p-6">
+                    <h3 class="text-xl">WELDED SCULPTURES</h3>
+                    <p class="text-[#00ffff]/70 text-sm mt-2">Industrial art meets creative vision.</p>
+                    <div class="mt-6 block text-center py-4 border border-[#ffff00] rounded-2xl text-xs uppercase">BUY ON ETSY</div>
+                </div>
+            </a>
+            <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank" class="bg-zinc-950 border border-[#ffff00]/30 rounded-3xl overflow-hidden card-hover block">
+                <div class="w-full h-64 bg-zinc-900 flex items-center justify-center text-6xl">🔥</div>
+                <div class="p-6">
+                    <h3 class="text-xl">CUSTOM FABRICATION</h3>
+                    <p class="text-[#00ffff]/70 text-sm mt-2">Bring your idea to life. Custom orders welcome.</p>
+                    <div class="mt-6 block text-center py-4 border border-[#ffff00] rounded-2xl text-xs uppercase">BUY ON ETSY</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- BITCOIN SECTION -->
+    <section class="bg-gradient-to-r from-[#f7931a]/10 to-black py-16 border-y border-[#f7931a]/30">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="flex justify-center mb-6 text-8xl">₿</div>
+            <h3 class="text-5xl neon-yellow">WE ACCEPT BITCOIN &amp; LIGHTNING NETWORK ⚡</h3>
+            <p class="mt-4 text-xl text-[#00ffff]">Fast • Private • No fees</p>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="bg-zinc-950 border border-[#00ffff]/40 rounded-3xl p-12 md:p-16">
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="text-5xl neon-yellow mb-6">GET IN TOUCH</h2>
+                    <p class="text-[#00ffff]">Custom quotes • Bitcoin Lightning invoices • Project ideas</p>
+                    <div class="mt-12">
+                        <a href="mailto:sublimecreates@gmail.com" class="text-xl text-[#00ffff] hover:text-white">sublimecreates@gmail.com</a>
+                    </div>
+                </div>
+                <form onsubmit="handleSubmit(event)" class="space-y-6">
+                    <input type="text" id="name" placeholder="YOUR NAME" class="w-full bg-transparent border border-[#00ffff]/40 rounded-2xl px-6 py-5 text-sm uppercase outline-none">
+                    <input type="email" id="email" placeholder="YOUR EMAIL" class="w-full bg-transparent border border-[#00ffff]/40 rounded-2xl px-6 py-5 text-sm uppercase outline-none">
+                    <textarea id="message" rows="5" placeholder="DESCRIBE YOUR PROJECT..." class="w-full bg-transparent border border-[#00ffff]/40 rounded-3xl px-6 py-5 text-sm uppercase outline-none"></textarea>
+                    <button type="submit" class="neon-button w-full bg-[#ff00ff] hover:bg-[#00ffff] text-black py-8 text-xl uppercase font-bold rounded-3xl">SEND MESSAGE</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black py-12 border-t border-[#ff00ff]/30">
+        <div class="max-w-7xl mx-auto px-6 text-xs text-[#00ffff] flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>© SUBLIME CREATES 2026 • METAL FABRICATION • ALBERTA</div>
+            <div class="flex gap-x-6">
+                <a href="https://www.instagram.com/sublime_creates/" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.etsy.com/shop/SUBLIMECREATESMETFAB/" target="_blank"><i class="fab fa-etsy"></i></a>
+            </div>
+            <div>POWERED BY NEON • STEEL • BITCOIN ⚡</div>
+        </div>
+    </footer>
+
+    <script>
+        function handleSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value || 'Customer';
+            const email = document.getElementById('email').value || '';
+            const message = document.getElementById('message').value || '';
+            const subject = encodeURIComponent(`Project inquiry from ${name}`);
+            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+            window.location.href = `mailto:sublimecreates@gmail.com?subject=${subject}&body=${body}`;
+            e.target.reset();
+        }
+    </script>
+</body>
+</html>
