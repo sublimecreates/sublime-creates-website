@@ -444,17 +444,18 @@
                         <a href="mailto:sublimecreates@gmail.com" class="text-sm md:text-xl text-[#00ffff] hover:text-white break-all">sublimecreates@gmail.com</a>
                     </div>
                 </div>
-                <form onsubmit="handleSubmit(event)" class="space-y-4 md:space-y-6">
+                <form id="contactForm" onsubmit="handleSubmit(event)" class="space-y-4 md:space-y-6">
                     <input type="text" id="name" placeholder="YOUR NAME"
                            class="w-full bg-transparent border border-[#00ffff]/40 rounded-xl md:rounded-2xl px-5 py-4 text-xs md:text-sm uppercase outline-none">
                     <input type="email" id="email" placeholder="YOUR EMAIL"
                            class="w-full bg-transparent border border-[#00ffff]/40 rounded-xl md:rounded-2xl px-5 py-4 text-xs md:text-sm uppercase outline-none">
                     <textarea id="message" rows="4" placeholder="DESCRIBE YOUR PROJECT..."
                               class="w-full bg-transparent border border-[#00ffff]/40 rounded-xl md:rounded-3xl px-5 py-4 text-xs md:text-sm uppercase outline-none"></textarea>
-                    <button type="submit"
+                    <button id="submitBtn" type="submit"
                             class="neon-button w-full bg-[#ff00ff] hover:bg-[#00ffff] text-black py-5 md:py-8 text-sm md:text-xl uppercase font-bold rounded-2xl md:rounded-3xl">
                         SEND MESSAGE
                     </button>
+                    <p id="formStatus" class="text-center text-xs md:text-sm hidden"></p>
                 </form>
             </div>
         </div>
@@ -480,15 +481,39 @@
         function closeMenu() { mobileMenu.classList.remove('open'); }
 
         // Contact form
-        function handleSubmit(e) {
+        async function handleSubmit(e) {
             e.preventDefault();
-            const name    = document.getElementById('name').value    || 'Customer';
-            const email   = document.getElementById('email').value   || '';
-            const message = document.getElementById('message').value || '';
-            const subject = encodeURIComponent(`Project inquiry from ${name}`);
-            const body    = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-            window.location.href = `mailto:sublimecreates@gmail.com?subject=${subject}&body=${body}`;
-            e.target.reset();
+            const btn    = document.getElementById('submitBtn');
+            const status = document.getElementById('formStatus');
+            const name    = document.getElementById('name').value;
+            const email   = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            btn.disabled = true;
+            btn.textContent = 'SENDING...';
+            status.classList.add('hidden');
+
+            try {
+                const res = await fetch('https://formspree.io/f/xzdklopb', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, message })
+                });
+
+                if (res.ok) {
+                    e.target.reset();
+                    status.textContent = 'MESSAGE SENT — WE\'LL BE IN TOUCH!';
+                    status.className = 'text-center text-xs md:text-sm text-[#00ffff]';
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch {
+                status.textContent = 'SOMETHING WENT WRONG — TRY EMAILING US DIRECTLY.';
+                status.className = 'text-center text-xs md:text-sm text-[#ff00ff]';
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'SEND MESSAGE';
         }
     </script>
 </body>
