@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IronWeek">
+<title>IronWeek · Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* =============================================
+   CONFIGURATION — CHANGE PASSWORD HERE
+   ============================================= */
+/* Password is set in the JS below (line ~120) */
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: #0a0a0a;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  color: #f0f0f0;
+  padding: 32px 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Animated background */
+.bg-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg-line {
+  position: absolute;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, #e8ff4720, transparent);
+  animation: lineFade 4s ease-in-out infinite;
+}
+@keyframes lineFade {
+  0%,100% { opacity: 0; transform: translateY(-20px); }
+  50% { opacity: 1; transform: translateY(0); }
+}
+
+.login-wrap {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.6s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-icon {
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1a2200, #2d3d00);
+  border: 2px solid #3a5000;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  font-size: 34px;
+}
+
+.app-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  letter-spacing: 4px;
+  color: #e8ff47;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.app-sub {
+  font-size: 13px;
+  color: #666;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 48px;
+}
+
+.input-wrap {
+  width: 100%;
+  position: relative;
+  margin-bottom: 12px;
+}
+.pass-input {
+  width: 100%;
+  background: #141414;
+  border: 1.5px solid #222;
+  border-radius: 14px;
+  padding: 16px 48px 16px 20px;
+  color: #f0f0f0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  letter-spacing: 4px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  text-align: center;
+  -webkit-appearance: none;
+}
+.pass-input:focus {
+  border-color: #e8ff47;
+  box-shadow: 0 0 0 3px rgba(232,255,71,0.08);
+}
+.pass-input.error {
+  border-color: #ff4444;
+  animation: shake 0.3s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+.eye-btn {
+  position: absolute;
+  right: 16px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  color: #555; cursor: pointer; font-size: 18px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  background: #e8ff47;
+  color: #0a0a0a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+.login-btn:active { transform: scale(0.98); background: #d4eb00; }
+
+.error-msg {
+  font-size: 13px;
+  color: #ff5555;
+  margin-top: 12px;
+  height: 18px;
+  text-align: center;
+}
+
+.hint {
+  position: absolute;
+  bottom: 40px;
+  font-size: 11px;
+  color: #333;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* iOS install hint */
+.install-hint {
+  margin-top: 40px;
+  background: #141414;
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+.install-hint-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.install-hint-text { font-size: 12px; color: #555; line-height: 1.6; }
+.install-hint-text strong { color: #888; }
+</style>
+</head>
+<body>
+<div class="bg-lines" id="bg-lines"></div>
+
+<div class="login-wrap">
+  <div class="logo-icon">🏋️</div>
+  <div class="app-name">IRONWEEK</div>
+  <div class="app-sub">Personal Training</div>
+
+  <div class="input-wrap">
+    <input
+      type="password"
+      class="pass-input"
+      id="pass-input"
+      placeholder="Enter password"
+      maxlength="30"
+      autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')tryLogin()"
+    >
+    <button class="eye-btn" onclick="toggleEye()" id="eye-btn">👁</button>
+  </div>
+  <button class="login-btn" onclick="tryLogin()">ENTER →</button>
+  <div class="error-msg" id="error-msg"></div>
+
+  <div class="install-hint" id="install-hint" style="display:none">
+    <div class="install-hint-icon">📲</div>
+    <div class="install-hint-text">
+      <strong>Add to Home Screen</strong><br>
+      Tap the Share button then "Add to Home Screen" in Safari to install IronWeek as an app.
+    </div>
+  </div>
+</div>
+
+<div class="hint">IRONWEEK · PRIVATE ACCESS</div>
+
+<script>
+// =============================================
+// ⚙️  SET YOUR PASSWORD BELOW
+// =============================================
+const APP_PASSWORD = 'ironweek2025';
+// ⚙️  SET THE PATH TO YOUR WORKOUT APP FILE
+// e.g. 'workout-app.html' if in same folder
+// or '/apps/workout-app.html' for subfolder
+const APP_URL = 'workout-app.html';
+// =============================================
+
+// Generate background lines
+const bg = document.getElementById('bg-lines');
+for (let i = 0; i < 8; i++) {
+  const line = document.createElement('div');
+  line.className = 'bg-line';
+  line.style.cssText = `
+    left: ${10 + i*12}%;
+    top: 0; bottom: 0;
+    animation-delay: ${i*0.5}s;
+    height: 100%;
+  `;
+  bg.appendChild(line);
+}
+
+// Check if already logged in
+if (sessionStorage.getItem('ironweek_auth') === 'ok') {
+  window.location.href = APP_URL;
+}
+
+// Check if iOS for install hint
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isInStandaloneMode() {
+  return window.navigator.standalone === true;
+}
+if (isIOS() && !isInStandaloneMode()) {
+  document.getElementById('install-hint').style.display = 'flex';
+}
+
+function tryLogin() {
+  const val = document.getElementById('pass-input').value;
+  const errEl = document.getElementById('error-msg');
+  if (val === APP_PASSWORD) {
+    sessionStorage.setItem('ironweek_auth', 'ok');
+    window.location.href = APP_URL;
+  } else {
+    const inp = document.getElementById('pass-input');
+    inp.classList.add('error');
+    errEl.textContent = 'Incorrect password. Try again.';
+    setTimeout(() => { inp.classList.remove('error'); inp.value = ''; }, 600);
+  }
+}
+
+let eyeVisible = false;
+function toggleEye() {
+  eyeVisible = !eyeVisible;
+  const inp = document.getElementById('pass-input');
+  inp.type = eyeVisible ? 'text' : 'password';
+  document.getElementById('eye-btn').textContent = eyeVisible ? '🙈' : '👁';
+}
+
+// Focus input on load
+setTimeout(() => document.getElementById('pass-input').focus(), 300);
+</script>
+</body>
+</html>
