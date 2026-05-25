@@ -7,6 +7,11 @@ const PORT = process.env.PORT || 3000;
 // Serve all static files (HTML, images, etc.) from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// /workout route — serves the password login page
+app.get('/workout', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'workout', 'index.html'));
+});
+
 // Catch-all: serve index.html for any unmatched route
 app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
