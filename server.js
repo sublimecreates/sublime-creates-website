@@ -4,15 +4,15 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve all static files (HTML, images, etc.) from the public directory
+// Serve static files from public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// /workout route — serves the password login page
-app.get('/workout', (req, res) => {
+// /workout and /workout/ both serve the workout app
+app.get(['/workout', '/workout/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'workout', 'index.html'));
 });
 
-// Catch-all: serve index.html for any unmatched route
+// Catch-all: serve main site
 app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
