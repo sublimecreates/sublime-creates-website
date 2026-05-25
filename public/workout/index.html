@@ -6,277 +6,749 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="IronWeek">
-<title>IronWeek · Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<title>IronWeek</title>
 <style>
-/* =============================================
-   CONFIGURATION — CHANGE PASSWORD HERE
-   ============================================= */
-/* Password is set in the JS below (line ~120) */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{--bg:#0a0a0a;--surface:#141414;--surface2:#1e1e1e;--surface3:#2a2a2a;--accent:#e8ff47;--text:#f0f0f0;--text2:#888;--text3:#555;--radius:16px;--safe-bottom:env(safe-area-inset-bottom,20px)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body {
-  background: #0a0a0a;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Sans', sans-serif;
-  color: #f0f0f0;
-  padding: 32px 24px;
-  overflow: hidden;
-  position: relative;
-}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;padding:32px 24px}
+.logo-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#1a2200,#2d3d00);border:2px solid #3a5000;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:34px}
+.login-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:52px;letter-spacing:4px;color:#e8ff47;line-height:1;margin-bottom:6px}
+.login-sub{font-size:13px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:48px}
+.login-wrap{width:100%;max-width:340px}
+.pass-input{width:100%;background:#141414;border:1.5px solid #222;border-radius:14px;padding:16px 20px;color:#f0f0f0;font-family:inherit;font-size:18px;letter-spacing:4px;outline:none;transition:border-color .2s;text-align:center;-webkit-appearance:none;margin-bottom:12px}
+.pass-input:focus{border-color:#e8ff47}
+.pass-input.err{border-color:#ff4444;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.login-btn{width:100%;padding:16px;border-radius:14px;border:none;background:#e8ff47;color:#0a0a0a;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all .15s}
+.login-btn:active{transform:scale(.98)}
+.login-err{font-size:13px;color:#ff5555;margin-top:10px;text-align:center;min-height:18px}
 
-/* Animated background */
-.bg-lines {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-.bg-line {
-  position: absolute;
-  width: 1px;
-  background: linear-gradient(to bottom, transparent, #e8ff4720, transparent);
-  animation: lineFade 4s ease-in-out infinite;
-}
-@keyframes lineFade {
-  0%,100% { opacity: 0; transform: translateY(-20px); }
-  50% { opacity: 1; transform: translateY(0); }
-}
+/* APP */
+#app-screen{display:none}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(14,14,14,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #222;display:flex;padding:10px 0 calc(10px + var(--safe-bottom));z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--text3);font-family:inherit;font-size:10px;font-weight:500;cursor:pointer;transition:color .2s;padding:4px 0}
+.nav-btn.active{color:var(--accent)}
+.nav-btn svg{width:22px;height:22px}
+.screen{display:none;padding:0 0 calc(80px + var(--safe-bottom));min-height:100dvh}
+.screen.active{display:block}
+.app-header{padding:56px 20px 16px;display:flex;align-items:flex-end;justify-content:space-between}
+.app-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:42px;letter-spacing:2px;color:var(--accent);line-height:1}
+.header-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding:0 16px 8px;margin-top:8px}
+.card{background:var(--surface);border-radius:var(--radius);padding:16px;margin:0 16px 12px}
 
-.login-wrap {
-  width: 100%;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeIn 0.6s ease;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* WEEK */
+.day-card{background:var(--surface);border-radius:var(--radius);margin:0 16px 10px;overflow:hidden;border:1px solid #1f1f1f}
+.day-card.has-workout{border-color:#2a2a2a}
+.day-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.day-label{display:flex;align-items:center;gap:12px}
+.day-dot{width:8px;height:8px;border-radius:50%;background:var(--text3)}
+.day-dot.today{background:var(--accent)}
+.day-name{font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:1px}
+.day-meta{font-size:12px;color:var(--text2);margin-top:1px}
+.day-chevron{color:var(--text3);transition:transform .2s;flex-shrink:0}
+.day-card.open .day-chevron{transform:rotate(180deg)}
+.day-content{display:none;padding:0 16px 14px;border-top:1px solid #1f1f1f}
+.day-card.open .day-content{display:block}
+.day-ex-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e1e1e}
+.day-ex-item:last-child{border-bottom:none}
+.mini-anim{width:36px;height:36px;border-radius:8px;background:var(--surface3);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;position:relative}
+.day-ex-info{flex:1}
+.day-ex-name{font-size:14px;font-weight:500}
+.day-ex-sets{font-size:12px;color:var(--text2);margin-top:1px}
+.rm-btn{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px;line-height:1}
+.day-actions{display:flex;gap:8px;margin-top:10px}
+.btn-sm{flex:1;padding:10px;border-radius:10px;border:none;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-accent{background:var(--accent);color:#0a0a0a}
+.btn-accent:active{transform:scale(.97)}
+.btn-ghost{background:var(--surface3);color:var(--text2)}
+.btn-ghost:active{transform:scale(.97)}
+.btn-danger{background:#2a1212;color:#ff5555}
+.rest-badge{text-align:center;padding:10px;color:var(--text3);font-size:13px;font-style:italic}
+.today-banner{margin:0 16px 12px;background:linear-gradient(135deg,#1a1f00,#252e00);border:1px solid #3a4a00;border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.today-label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.today-name{font-family:'Bebas Neue',Impact,sans-serif;font-size:20px;color:var(--accent);letter-spacing:1px;margin-top:2px}
+.start-btn{background:var(--accent);color:#0a0a0a;border:none;border-radius:10px;padding:10px 16px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
 
-.logo-icon {
-  width: 72px; height: 72px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #1a2200, #2d3d00);
-  border: 2px solid #3a5000;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
-  font-size: 34px;
-}
+/* LIBRARY */
+.search-wrap{margin:0 16px 12px;position:relative}
+.search-wrap input{width:100%;background:var(--surface);border:1px solid #222;border-radius:12px;padding:12px 16px 12px 42px;color:var(--text);font-family:inherit;font-size:15px;outline:none;transition:border-color .2s}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.chips{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:7px 14px;border-radius:20px;border:1px solid #333;background:var(--surface);color:var(--text2);font-family:inherit;font-size:13px;cursor:pointer;transition:all .15s;flex-shrink:0}
+.chip.active{background:var(--accent);color:#0a0a0a;border-color:var(--accent);font-weight:600}
+.ex-list{padding:0 16px}
+.ex-card{background:var(--surface);border-radius:var(--radius);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:14px;border:1px solid #1f1f1f;transition:border-color .2s,transform .15s;-webkit-user-select:none;user-select:none}
+.ex-card:active{transform:scale(.98);border-color:var(--accent)}
+.anim-box{width:64px;height:64px;border-radius:12px;background:var(--surface2);flex-shrink:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.ex-info{flex:1}
+.ex-name{font-size:15px;font-weight:600;line-height:1.2}
+.ex-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--surface3);color:var(--text2);font-weight:500}
+.tag.m{background:#1a1a2e;color:#8888ff}
+.tag.e{background:#1a2a1a;color:#66cc66}
+.add-btn{width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .15s;font-size:20px;color:#0a0a0a;font-weight:700;line-height:1}
+.add-btn:active{transform:scale(.9)}
+.empty-state{text-align:center;padding:60px 32px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:16px}
+.empty-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:28px;color:var(--text2);margin-bottom:8px}
+.empty-desc{font-size:14px;line-height:1.6}
 
-.app-name {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 52px;
-  letter-spacing: 4px;
-  color: #e8ff47;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.app-sub {
-  font-size: 13px;
-  color: #666;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 48px;
-}
+/* PLANS */
+.new-plan-btn{width:calc(100% - 32px);margin:0 16px 16px;padding:16px;border-radius:var(--radius);border:2px dashed #333;background:none;color:var(--text2);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.new-plan-btn:active{border-color:var(--accent);color:var(--accent)}
+.plan-card{background:var(--surface);border-radius:var(--radius);padding:16px;margin:0 16px 12px;border:1px solid #1f1f1f;cursor:pointer;transition:border-color .2s}
+.plan-card:active{border-color:var(--accent)}
+.plan-card-top{display:flex;justify-content:space-between;align-items:flex-start}
+.plan-name{font-family:'Bebas Neue',Impact,sans-serif;font-size:24px;letter-spacing:1px}
+.plan-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:0}
+.plan-dots{display:flex;gap:6px;margin-top:10px}
+.plan-dot{width:28px;height:28px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3)}
+.plan-dot.on{background:var(--accent);color:#0a0a0a}
+.plan-stats{font-size:12px;color:var(--text2);margin-top:8px}
 
-.input-wrap {
-  width: 100%;
-  position: relative;
-  margin-bottom: 12px;
-}
-.pass-input {
-  width: 100%;
-  background: #141414;
-  border: 1.5px solid #222;
-  border-radius: 14px;
-  padding: 16px 48px 16px 20px;
-  color: #f0f0f0;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 18px;
-  letter-spacing: 4px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  text-align: center;
-  -webkit-appearance: none;
-}
-.pass-input:focus {
-  border-color: #e8ff47;
-  box-shadow: 0 0 0 3px rgba(232,255,71,0.08);
-}
-.pass-input.error {
-  border-color: #ff4444;
-  animation: shake 0.3s ease;
-}
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  75% { transform: translateX(8px); }
-}
-.eye-btn {
-  position: absolute;
-  right: 16px; top: 50%;
-  transform: translateY(-50%);
-  background: none; border: none;
-  color: #555; cursor: pointer; font-size: 18px;
-}
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);z-index:200;align-items:flex-end}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:20px 20px calc(20px + var(--safe-bottom));width:100%;max-height:90dvh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:#444;margin:0 auto 20px}
+.modal-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:28px;letter-spacing:1px;margin-bottom:16px}
+.modal-input{width:100%;background:var(--surface2);border:1px solid #333;border-radius:12px;padding:14px 16px;color:var(--text);font-family:inherit;font-size:16px;outline:none;margin-bottom:12px;transition:border-color .2s;-webkit-appearance:none}
+.modal-input:focus{border-color:var(--accent)}
+.modal-btn{width:100%;padding:16px;border-radius:12px;border:none;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:all .15s}
+.modal-btn.p{background:var(--accent);color:#0a0a0a}
+.modal-btn.p:active{transform:scale(.98)}
+.modal-btn.s{background:var(--surface3);color:var(--text2)}
+.sets-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.sets-row label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px}
+.day-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.modal-subtitle{font-size:13px;color:var(--text3);margin-bottom:8px;font-weight:600}
+.ex-detail-anim{width:120px;height:120px;border-radius:20px;background:var(--surface2);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.ex-detail-name{font-family:'Bebas Neue',Impact,sans-serif;font-size:32px;letter-spacing:1px;text-align:center;margin-bottom:6px}
+.ex-detail-desc{font-size:14px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:16px}
+.muscle-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px}
 
-.login-btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 14px;
-  border: none;
-  background: #e8ff47;
-  color: #0a0a0a;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 4px;
-  transition: all 0.15s;
-  letter-spacing: 0.5px;
-}
-.login-btn:active { transform: scale(0.98); background: #d4eb00; }
+/* PLAYER */
+.player-anim{width:160px;height:160px;border-radius:24px;background:var(--surface2);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.player-ex-name{font-family:'Bebas Neue',Impact,sans-serif;font-size:36px;letter-spacing:1px;text-align:center;margin-bottom:4px}
+.player-info{font-size:18px;color:var(--text2);text-align:center}
+.set-circles{display:flex;gap:8px;justify-content:center;margin:20px 0}
+.set-circle{width:40px;height:40px;border-radius:50%;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--text3);transition:all .2s}
+.set-circle.done{background:var(--accent);border-color:var(--accent);color:#0a0a0a}
+.set-circle.cur{border-color:var(--accent);color:var(--accent)}
+.timer-num{font-family:'Bebas Neue',Impact,sans-serif;font-size:64px;letter-spacing:4px;text-align:center;color:var(--accent);margin:10px 0}
+.timer-lbl{text-align:center;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px}
+.prog-wrap{background:var(--surface3);border-radius:4px;height:4px;margin:0 0 16px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
+.player-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 
-.error-msg {
-  font-size: 13px;
-  color: #ff5555;
-  margin-top: 12px;
-  height: 18px;
-  text-align: center;
-}
-
-.hint {
-  position: absolute;
-  bottom: 40px;
-  font-size: 11px;
-  color: #333;
-  text-align: center;
-  letter-spacing: 1px;
-}
-
-/* iOS install hint */
-.install-hint {
-  margin-top: 40px;
-  background: #141414;
-  border: 1px solid #222;
-  border-radius: 12px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  width: 100%;
-}
-.install-hint-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-.install-hint-text { font-size: 12px; color: #555; line-height: 1.6; }
-.install-hint-text strong { color: #888; }
+/* ANIMATIONS */
+@keyframes pu-body{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@keyframes pu-arm{0%,100%{transform-origin:top;transform:rotate(40deg)}50%{transform-origin:top;transform:rotate(70deg)}}
+@keyframes sq-body{0%,100%{transform:translateY(0)}50%{transform:translateY(12px) scaleY(.85)}}
+@keyframes sq-leg{0%,100%{transform-origin:top;transform:rotate(10deg)}50%{transform-origin:top;transform:rotate(55deg)}}
+@keyframes cu-arm{0%,100%{transform-origin:top;transform:rotate(20deg)}50%{transform-origin:top;transform:rotate(-40deg)}}
+@keyframes ru-body{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes ru-leg1{0%,100%{transform-origin:top;transform:rotate(-30deg)}50%{transform-origin:top;transform:rotate(50deg)}}
+@keyframes ru-leg2{0%,100%{transform-origin:top;transform:rotate(50deg)}50%{transform-origin:top;transform:rotate(-30deg)}}
+@keyframes ro-body{0%,100%{transform:translateX(0)}50%{transform:translateX(-6px)}}
+@keyframes ro-arm{0%,100%{transform-origin:top;transform:rotate(60deg)}50%{transform-origin:top;transform:rotate(10deg)}}
+@keyframes pr-arm{0%,100%{transform-origin:top;transform:rotate(80deg)}50%{transform-origin:top;transform:rotate(10deg)}}
+@keyframes pl-pulse{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.02)}}
+@keyframes dl-body{0%,100%{transform:rotate(0deg) translateY(0)}50%{transform:rotate(-35deg) translateY(8px)}}
+@keyframes ln-body{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@keyframes ln-leg1{0%,100%{transform-origin:top;transform:rotate(0deg)}50%{transform-origin:top;transform:rotate(40deg)}}
+@keyframes ln-leg2{0%,100%{transform-origin:top;transform:rotate(0deg)}50%{transform-origin:top;transform:rotate(-60deg)}}
+@keyframes pu2-body{0%,100%{transform:translateY(6px)}50%{transform:translateY(-4px)}}
+@keyframes dp-body{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+@keyframes cr-upper{0%,100%{transform-origin:bottom;transform:rotate(0deg)}50%{transform-origin:bottom;transform:rotate(-35deg)}}
+@keyframes jp-body{0%,40%{transform:translateY(0)}60%{transform:translateY(-14px)}80%,100%{transform:translateY(0)}}
+@keyframes la-arm{0%,100%{transform-origin:top center;transform:rotate(0deg)}50%{transform-origin:top center;transform:rotate(80deg)}}
+@keyframes fl-arm{0%,100%{transform-origin:top;transform:rotate(70deg)}50%{transform-origin:top;transform:rotate(10deg)}}
 </style>
 </head>
 <body>
-<div class="bg-lines" id="bg-lines"></div>
 
-<div class="login-wrap">
+<!-- LOGIN -->
+<div id="login-screen">
   <div class="logo-icon">🏋️</div>
-  <div class="app-name">IRONWEEK</div>
-  <div class="app-sub">Personal Training</div>
-
-  <div class="input-wrap">
-    <input
-      type="password"
-      class="pass-input"
-      id="pass-input"
-      placeholder="Enter password"
-      maxlength="30"
-      autocomplete="current-password"
-      onkeydown="if(event.key==='Enter')tryLogin()"
-    >
-    <button class="eye-btn" onclick="toggleEye()" id="eye-btn">👁</button>
-  </div>
-  <button class="login-btn" onclick="tryLogin()">ENTER →</button>
-  <div class="error-msg" id="error-msg"></div>
-
-  <div class="install-hint" id="install-hint" style="display:none">
-    <div class="install-hint-icon">📲</div>
-    <div class="install-hint-text">
-      <strong>Add to Home Screen</strong><br>
-      Tap the Share button then "Add to Home Screen" in Safari to install IronWeek as an app.
-    </div>
+  <div class="login-title">IRONWEEK</div>
+  <div class="login-sub">Personal Training</div>
+  <div class="login-wrap">
+    <input type="password" class="pass-input" id="pass-input" placeholder="Enter password" maxlength="30" autocomplete="current-password">
+    <button class="login-btn" id="login-btn">ENTER →</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<div class="hint">IRONWEEK · PRIVATE ACCESS</div>
+<!-- APP -->
+<div id="app-screen">
+
+  <!-- WEEK SCREEN -->
+  <div id="screen-week" class="screen active">
+    <div class="app-header">
+      <div><div class="app-title">IRONWEEK</div><div class="header-sub">Your weekly plan</div></div>
+      <div id="active-badge" style="font-size:12px;color:var(--text2);text-align:right"></div>
+    </div>
+    <div id="today-banner"></div>
+    <div class="section-label">THIS WEEK</div>
+    <div id="week-grid"></div>
+  </div>
+
+  <!-- LIBRARY SCREEN -->
+  <div id="screen-library" class="screen">
+    <div class="app-header">
+      <div><div class="app-title">EXERCISES</div><div class="header-sub">Tap + to add to your week</div></div>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" id="lib-search" placeholder="Search exercises…">
+    </div>
+    <div class="chips" id="muscle-chips"></div>
+    <div class="ex-list" id="ex-list"></div>
+  </div>
+
+  <!-- PLANS SCREEN -->
+  <div id="screen-plans" class="screen">
+    <div class="app-header">
+      <div><div class="app-title">MY PLANS</div><div class="header-sub" id="plans-sub"></div></div>
+    </div>
+    <button class="new-plan-btn" id="new-plan-btn">＋ Create New Plan</button>
+    <div id="plans-list"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-week" data-screen="week">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Week
+    </button>
+    <button class="nav-btn" id="nav-library" data-screen="library">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h8"/><circle cx="17" cy="17" r="3"/><path d="m19.5 19.5 1.5 1.5"/></svg>
+      Library
+    </button>
+    <button class="nav-btn" id="nav-plans" data-screen="plans">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Plans
+    </button>
+  </nav>
+</div>
+
+<!-- MODAL: Add to Day -->
+<div class="overlay" id="modal-add">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-add-title">Add Exercise</div>
+    <div id="modal-add-anim" style="width:80px;height:80px;border-radius:16px;background:var(--surface2);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden"></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:16px;text-align:center" id="modal-add-muscles"></div>
+    <div class="modal-subtitle">ADD TO DAY</div>
+    <div class="day-chips" id="day-chips"></div>
+    <div class="modal-subtitle">SETS & REPS</div>
+    <div class="sets-row">
+      <div><label>Sets</label><input type="number" class="modal-input" id="inp-sets" value="3" min="1" max="20" style="margin:0;text-align:center"></div>
+      <div><label>Reps</label><input type="number" class="modal-input" id="inp-reps" value="10" min="1" max="100" style="margin:0;text-align:center"></div>
+      <div><label>Rest (s)</label><input type="number" class="modal-input" id="inp-rest" value="60" min="0" max="300" step="15" style="margin:0;text-align:center"></div>
+    </div>
+    <button class="modal-btn p" id="confirm-add-btn">Add Exercise</button>
+    <button class="modal-btn s" onclick="closeModal('modal-add')">Cancel</button>
+  </div>
+</div>
+
+<!-- MODAL: Exercise Detail -->
+<div class="overlay" id="modal-detail">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="ex-detail-anim" id="detail-anim"></div>
+    <div class="ex-detail-name" id="detail-name"></div>
+    <div class="ex-detail-desc" id="detail-desc"></div>
+    <div class="muscle-tags" id="detail-muscles"></div>
+    <button class="modal-btn p" id="detail-add-btn">Add to Plan</button>
+    <button class="modal-btn s" onclick="closeModal('modal-detail')">Close</button>
+  </div>
+</div>
+
+<!-- MODAL: New Plan -->
+<div class="overlay" id="modal-newplan">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">NEW PLAN</div>
+    <input type="text" class="modal-input" id="new-plan-name" placeholder="e.g. Push Pull Legs" maxlength="30">
+    <button class="modal-btn p" id="create-plan-btn">Create Plan</button>
+    <button class="modal-btn s" onclick="closeModal('modal-newplan')">Cancel</button>
+  </div>
+</div>
+
+<!-- MODAL: Workout Player -->
+<div class="overlay" id="modal-player" style="align-items:center">
+  <div class="modal" style="border-radius:24px;max-height:95dvh">
+    <div class="modal-handle"></div>
+    <div class="player-top">
+      <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:1px;color:var(--text2)" id="player-day"></div>
+      <div style="font-size:13px;color:var(--text2)" id="player-prog-lbl"></div>
+    </div>
+    <div class="prog-wrap"><div class="prog-fill" id="player-prog-bar"></div></div>
+    <div id="player-content"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="modal-btn s" id="player-prev" style="flex:.5">Back</button>
+      <button class="modal-btn p" id="player-next" style="flex:1">Done Set ✓</button>
+    </div>
+    <button class="modal-btn s" id="player-exit" style="margin-top:8px">Exit Workout</button>
+  </div>
+</div>
 
 <script>
-// =============================================
-// ⚙️  SET YOUR PASSWORD BELOW
-// =============================================
-const APP_PASSWORD = 'ironweek2025';
-// ⚙️  SET THE PATH TO YOUR WORKOUT APP FILE
-// e.g. 'workout-app.html' if in same folder
-// or '/apps/workout-app.html' for subfolder
-const APP_URL = 'workout-app.html';
-// =============================================
+// ── CONFIG ──────────────────────────────────────────────
+const PASSWORD = 'ironweek2025'; // change me!
+// ────────────────────────────────────────────────────────
 
-// Generate background lines
-const bg = document.getElementById('bg-lines');
-for (let i = 0; i < 8; i++) {
-  const line = document.createElement('div');
-  line.className = 'bg-line';
-  line.style.cssText = `
-    left: ${10 + i*12}%;
-    top: 0; bottom: 0;
-    animation-delay: ${i*0.5}s;
-    height: 100%;
-  `;
-  bg.appendChild(line);
-}
+// ── LOGIN ───────────────────────────────────────────────
+(function(){
+  if(sessionStorage.getItem('iw_auth')==='1'){boot();return;}
+  const inp=document.getElementById('pass-input');
+  const btn=document.getElementById('login-btn');
+  const err=document.getElementById('login-err');
+  function tryLogin(){
+    if(inp.value===PASSWORD){
+      sessionStorage.setItem('iw_auth','1');
+      boot();
+    } else {
+      err.textContent='Incorrect password.';
+      inp.classList.add('err');
+      setTimeout(()=>{inp.classList.remove('err');inp.value='';},500);
+    }
+  }
+  btn.addEventListener('click',tryLogin);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+  setTimeout(()=>inp.focus(),200);
+})();
 
-// Check if already logged in
-if (sessionStorage.getItem('ironweek_auth') === 'ok') {
-  window.location.href = APP_URL;
-}
-
-// Check if iOS for install hint
-function isIOS() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-}
-function isInStandaloneMode() {
-  return window.navigator.standalone === true;
-}
-if (isIOS() && !isInStandaloneMode()) {
-  document.getElementById('install-hint').style.display = 'flex';
+function boot(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  initApp();
 }
 
-function tryLogin() {
-  const val = document.getElementById('pass-input').value;
-  const errEl = document.getElementById('error-msg');
-  if (val === APP_PASSWORD) {
-    sessionStorage.setItem('ironweek_auth', 'ok');
-    window.location.href = APP_URL;
+// ── DATA ─────────────────────────────────────────────────
+const EX=[
+  {id:'bench-press',name:'Bench Press',muscle:'Chest',equipment:'Barbell',anim:'press',desc:'Lie on flat bench. Lower barbell to mid-chest then press explosively upward. Keep shoulder blades retracted.',muscles:['Chest','Triceps','Front Delts']},
+  {id:'incline-press',name:'Incline Bench Press',muscle:'Chest',equipment:'Barbell',anim:'press',desc:'Set bench to 30–45°. Press bar from upper chest. Targets upper pec fibres.',muscles:['Upper Chest','Triceps','Front Delts']},
+  {id:'pushup',name:'Push-Up',muscle:'Chest',equipment:'Bodyweight',anim:'pushup',desc:'Hands shoulder-width apart. Lower chest to floor keeping core tight, then press up.',muscles:['Chest','Triceps','Core']},
+  {id:'db-fly',name:'Dumbbell Fly',muscle:'Chest',equipment:'Dumbbell',anim:'fly',desc:'Lie flat, arms extended. Lower dumbbells in wide arc, squeeze pecs at top.',muscles:['Chest','Front Delts']},
+  {id:'cable-cross',name:'Cable Crossover',muscle:'Chest',equipment:'Cable',anim:'fly',desc:'Stand between cables. Pull handles together in front of chest in a hugging motion.',muscles:['Chest','Front Delts']},
+  {id:'chest-dip',name:'Chest Dip',muscle:'Chest',equipment:'Bodyweight',anim:'dip',desc:'Lean forward on dip bars. Lower until shoulders are below elbows, press back up.',muscles:['Chest','Triceps']},
+  {id:'pullup',name:'Pull-Up',muscle:'Back',equipment:'Bodyweight',anim:'pullup',desc:'Hang from bar, hands wider than shoulder. Pull chin above bar, lower with control.',muscles:['Lats','Biceps','Rear Delts']},
+  {id:'bb-row',name:'Barbell Row',muscle:'Back',equipment:'Barbell',anim:'row',desc:'Hinge at hips, bar under shoulders. Pull bar to lower chest squeezing shoulder blades.',muscles:['Lats','Rhomboids','Biceps']},
+  {id:'db-row',name:'Dumbbell Row',muscle:'Back',equipment:'Dumbbell',anim:'row',desc:'One hand and knee on bench. Drive elbow up, pulling dumbbell to hip.',muscles:['Lats','Rhomboids','Biceps']},
+  {id:'lat-pd',name:'Lat Pulldown',muscle:'Back',equipment:'Cable',anim:'pullup',desc:'Grip bar wide. Pull to upper chest leading with elbows. Lean back slightly.',muscles:['Lats','Biceps']},
+  {id:'deadlift',name:'Deadlift',muscle:'Back',equipment:'Barbell',anim:'deadlift',desc:'Bar over mid-foot. Hinge hips back, brace core, drive through floor to stand tall.',muscles:['Hamstrings','Glutes','Lower Back','Traps']},
+  {id:'cable-row',name:'Seated Cable Row',muscle:'Back',equipment:'Cable',anim:'row',desc:'Sit upright, pull handle to abdomen, squeeze back. Keep chest up.',muscles:['Mid Back','Rhomboids','Biceps']},
+  {id:'ohp',name:'Overhead Press',muscle:'Shoulders',equipment:'Barbell',anim:'press',desc:'Standing or seated, press bar from shoulders overhead. Lock out fully at top.',muscles:['Front Delts','Side Delts','Triceps']},
+  {id:'db-press',name:'DB Shoulder Press',muscle:'Shoulders',equipment:'Dumbbell',anim:'press',desc:'Press dumbbells from shoulder height overhead. Allows greater range of motion.',muscles:['Delts','Triceps']},
+  {id:'lat-raise',name:'Lateral Raise',muscle:'Shoulders',equipment:'Dumbbell',anim:'lateral',desc:'Stand tall, raise dumbbells to shoulder height in arc. Lead with elbows.',muscles:['Side Delts']},
+  {id:'front-raise',name:'Front Raise',muscle:'Shoulders',equipment:'Dumbbell',anim:'lateral',desc:'Raise dumbbells to eye level in front. Keep slight bend in elbow.',muscles:['Front Delts']},
+  {id:'face-pull',name:'Face Pull',muscle:'Shoulders',equipment:'Cable',anim:'row',desc:'Pull rope to face, elbows high. Rotate hands outward at end.',muscles:['Rear Delts','Rotator Cuff','Traps']},
+  {id:'bb-curl',name:'Barbell Curl',muscle:'Arms',equipment:'Barbell',anim:'curl',desc:'Stand tall, curl bar from hips to chin. Keep elbows pinned at sides.',muscles:['Biceps','Forearms']},
+  {id:'hammer-curl',name:'Hammer Curl',muscle:'Arms',equipment:'Dumbbell',anim:'curl',desc:'Neutral grip (thumbs up). Curl dumbbells alternately. Targets brachialis.',muscles:['Biceps','Brachialis']},
+  {id:'incline-curl',name:'Incline DB Curl',muscle:'Arms',equipment:'Dumbbell',anim:'curl',desc:'Sit on incline bench, arms hang behind torso. Full stretch at bottom.',muscles:['Biceps']},
+  {id:'pushdown',name:'Tricep Pushdown',muscle:'Arms',equipment:'Cable',anim:'press',desc:'Push cable bar down to full lockout. Keep elbows at sides throughout.',muscles:['Triceps']},
+  {id:'skull-crusher',name:'Skull Crusher',muscle:'Arms',equipment:'Barbell',anim:'press',desc:'Lie on bench, lower EZ-bar toward forehead. Extend back to start.',muscles:['Triceps']},
+  {id:'tricep-dip',name:'Tricep Dip',muscle:'Arms',equipment:'Bodyweight',anim:'dip',desc:'Dip bars, body upright. Lower until elbows 90°, press back. Keep elbows close.',muscles:['Triceps']},
+  {id:'squat',name:'Back Squat',muscle:'Legs',equipment:'Barbell',anim:'squat',desc:'Bar on upper traps. Hinge knees and hips, sit to parallel or below. Drive through heels.',muscles:['Quads','Glutes','Hamstrings']},
+  {id:'front-squat',name:'Front Squat',muscle:'Legs',equipment:'Barbell',anim:'squat',desc:'Bar across front delts. Stay upright as you squat deep. More quad-dominant.',muscles:['Quads','Glutes','Core']},
+  {id:'leg-press',name:'Leg Press',muscle:'Legs',equipment:'Machine',anim:'squat',desc:'Feet shoulder-width on platform. Press to near-lockout, lower controlled.',muscles:['Quads','Glutes','Hamstrings']},
+  {id:'rdl',name:'Romanian Deadlift',muscle:'Legs',equipment:'Barbell',anim:'deadlift',desc:'Slight knee bend, hinge hips back pushing bar down legs. Feel hamstring stretch.',muscles:['Hamstrings','Glutes','Lower Back']},
+  {id:'lunge',name:'Lunge',muscle:'Legs',equipment:'Bodyweight',anim:'lunge',desc:'Step forward, lower rear knee toward floor. Push through front heel to return.',muscles:['Quads','Glutes','Hamstrings']},
+  {id:'db-lunge',name:'Dumbbell Lunge',muscle:'Legs',equipment:'Dumbbell',anim:'lunge',desc:'Hold dumbbells at sides. Step forward and lower into lunge. Alternate legs.',muscles:['Quads','Glutes']},
+  {id:'ham-curl',name:'Hamstring Curl',muscle:'Legs',equipment:'Machine',anim:'squat',desc:'Lying or seated. Curl legs against resistance. Full extension and contraction.',muscles:['Hamstrings']},
+  {id:'leg-ext',name:'Leg Extension',muscle:'Legs',equipment:'Machine',anim:'squat',desc:'Seat adjusted so knees align with pivot. Extend until locked, lower slowly.',muscles:['Quads']},
+  {id:'calf-raise',name:'Calf Raise',muscle:'Legs',equipment:'Bodyweight',anim:'jump',desc:'Stand on edge of step or flat ground. Rise onto toes, hold 1s, lower slowly.',muscles:['Calves']},
+  {id:'hip-thrust',name:'Hip Thrust',muscle:'Legs',equipment:'Barbell',anim:'deadlift',desc:'Shoulders on bench, bar on hips. Drive hips skyward, squeeze glutes at top.',muscles:['Glutes','Hamstrings']},
+  {id:'plank',name:'Plank',muscle:'Core',equipment:'Bodyweight',anim:'plank',desc:'Forearms on floor, body rigid from head to heels. Brace abs, don\'t let hips sag.',muscles:['Core','Shoulders']},
+  {id:'crunch',name:'Crunch',muscle:'Core',equipment:'Bodyweight',anim:'crunch',desc:'Lie on back, feet flat. Curl upper back off floor, exhale, lower slowly.',muscles:['Abs']},
+  {id:'leg-raise',name:'Hanging Leg Raise',muscle:'Core',equipment:'Bodyweight',anim:'pullup',desc:'Hang from bar. Raise legs to 90° or higher with control. Avoid swinging.',muscles:['Lower Abs','Hip Flexors']},
+  {id:'ab-wheel',name:'Ab Wheel Rollout',muscle:'Core',equipment:'Equipment',anim:'plank',desc:'Kneel with wheel. Roll out as far as possible keeping core braced, roll back in.',muscles:['Abs','Lower Back','Shoulders']},
+  {id:'russian-twist',name:'Russian Twist',muscle:'Core',equipment:'Bodyweight',anim:'crunch',desc:'Sit at 45°, feet off floor. Rotate torso side to side holding a weight.',muscles:['Obliques','Abs']},
+  {id:'dead-bug',name:'Dead Bug',muscle:'Core',equipment:'Bodyweight',anim:'plank',desc:'Lie on back, arms & legs up. Lower opposite arm and leg simultaneously. Alternate.',muscles:['Core','Lower Abs']},
+  {id:'run',name:'Running',muscle:'Cardio',equipment:'Bodyweight',anim:'run',desc:'Maintain consistent pace. Land midfoot, arms relaxed at 90°, chest tall.',muscles:['Full Body','Cardiovascular']},
+  {id:'burpee',name:'Burpee',muscle:'Cardio',equipment:'Bodyweight',anim:'pushup',desc:'Squat, kick feet back, pushup, jump feet in, explode up with arms overhead.',muscles:['Full Body','Cardiovascular']},
+  {id:'box-jump',name:'Box Jump',muscle:'Cardio',equipment:'Equipment',anim:'jump',desc:'Stand before box. Swing arms and jump onto box. Step down carefully.',muscles:['Legs','Power','Cardiovascular']},
+  {id:'mtn-climber',name:'Mountain Climber',muscle:'Cardio',equipment:'Bodyweight',anim:'run',desc:'Push-up position. Drive knees alternately toward chest rapidly.',muscles:['Core','Shoulders','Cardiovascular']},
+  {id:'jump-rope',name:'Jump Rope',muscle:'Cardio',equipment:'Equipment',anim:'jump',desc:'Small jumps, wrists drive rotation. Land softly on balls of feet.',muscles:['Calves','Cardiovascular']},
+];
+const MUSCLES=['All','Chest','Back','Shoulders','Arms','Legs','Core','Cardio'];
+const WKEYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const WLABELS={Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'};
+const WSHORT={Mon:'M',Tue:'T',Wed:'W',Thu:'T',Fri:'F',Sat:'S',Sun:'S'};
+
+// ── STATE ────────────────────────────────────────────────
+let S={plans:[],activePlanId:null,weekPlan:{Mon:null,Tue:null,Wed:null,Thu:null,Fri:null,Sat:null,Sun:null}};
+function loadS(){try{const d=localStorage.getItem('iw_v3');if(d)S=JSON.parse(d);}catch(e){}}
+function saveS(){localStorage.setItem('iw_v3',JSON.stringify(S));}
+
+// ── ANIMATIONS ───────────────────────────────────────────
+function svg(type,size){
+  const t=`
+  pushup:<g class="b" style="animation:pu-body 1.2s ease-in-out infinite;transform-origin:center"><line x1="10" y1="38" x2="54" y2="38" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><g style="animation:pu-arm 1.2s ease-in-out infinite;transform-origin:14px 38px"><line x1="14" y1="38" x2="14" y2="52" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><g style="animation:pu-arm 1.2s ease-in-out infinite;transform-origin:50px 38px"><line x1="50" y1="38" x2="50" y2="52" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><line x1="26" y1="26" x2="38" y2="26" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="18" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/></g>
+  squat:<g style="animation:sq-body 1.4s ease-in-out infinite;transform-origin:32px 32px"><circle cx="32" cy="10" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="16" x2="32" y2="32" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><line x1="32" y1="22" x2="22" y2="28" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="32" y1="22" x2="42" y2="28" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><g style="animation:sq-leg 1.4s ease-in-out infinite;transform-origin:30px 32px"><line x1="30" y1="32" x2="24" y2="48" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="48" x2="28" y2="56" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><g style="animation:sq-leg 1.4s ease-in-out infinite;transform-origin:34px 32px;animation-direction:reverse"><line x1="34" y1="32" x2="40" y2="48" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="40" y1="48" x2="36" y2="56" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  curl:<g><circle cx="32" cy="10" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="16" x2="32" y2="34" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><g style="animation:cu-arm 1s ease-in-out infinite;transform-origin:30px 24px"><line x1="30" y1="24" x2="18" y2="28" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="18" y1="28" x2="12" y2="18" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><line x1="34" y1="24" x2="46" y2="30" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="34" x2="26" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="34" x2="38" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+  run:<g style="animation:ru-body .5s ease-in-out infinite;transform-origin:32px 32px"><circle cx="32" cy="8" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="14" x2="32" y2="32" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="22" x2="18" y2="28" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="22" x2="46" y2="18" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><g style="animation:ru-leg1 .5s ease-in-out infinite;transform-origin:30px 32px"><line x1="30" y1="32" x2="22" y2="46" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="46" x2="26" y2="56" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><g style="animation:ru-leg2 .5s ease-in-out infinite;transform-origin:34px 32px"><line x1="34" y1="32" x2="42" y2="44" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="42" y1="44" x2="50" y2="38" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  row:<g style="animation:ro-body 1.2s ease-in-out infinite;transform-origin:32px 32px"><g transform="translate(28,20) rotate(-30)"><circle cx="0" cy="-14" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="0" y1="-9" x2="0" y2="6" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><g style="animation:ro-arm 1.2s ease-in-out infinite;transform-origin:0px -2px"><line x1="0" y1="-2" x2="18" y2="2" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><circle cx="20" cy="3" r="3" fill="#e8ff47" opacity=".5"/></g><line x1="0" y1="6" x2="-8" y2="20" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="0" y1="6" x2="8" y2="20" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  press:<g><circle cx="32" cy="10" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="16" x2="32" y2="34" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><g style="animation:pr-arm 1.2s ease-in-out infinite;transform-origin:32px 24px"><line x1="20" y1="24" x2="12" y2="30" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="30" x2="12" y2="16" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="44" y1="24" x2="52" y2="30" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="52" y1="30" x2="52" y2="16" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="10" y1="16" x2="54" y2="16" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/></g><line x1="30" y1="34" x2="26" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="34" x2="38" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+  plank:<g style="animation:pl-pulse 2s ease-in-out infinite;transform-origin:32px 36px"><line x1="6" y1="36" x2="50" y2="36" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><circle cx="54" cy="28" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="6" y1="36" x2="2" y2="46" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="18" y1="36" x2="14" y2="46" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+  deadlift:<g style="animation:dl-body 1.6s ease-in-out infinite;transform-origin:32px 20px"><circle cx="32" cy="8" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="14" x2="32" y2="30" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="20" x2="18" y2="28" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="20" x2="46" y2="28" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="28" x2="48" y2="28" stroke="#e8ff47" stroke-width="3.5" stroke-linecap="round"/><line x1="30" y1="30" x2="26" y2="46" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="30" x2="38" y2="46" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+  lunge:<g><circle cx="32" cy="8" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><g style="animation:ln-body 1.4s ease-in-out infinite;transform-origin:32px 20px"><line x1="32" y1="14" x2="32" y2="30" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="22" x2="20" y2="27" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="22" x2="44" y2="27" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><g style="animation:ln-leg1 1.4s ease-in-out infinite;transform-origin:30px 30px"><line x1="30" y1="30" x2="22" y2="46" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="46" x2="26" y2="56" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><g style="animation:ln-leg2 1.4s ease-in-out infinite;transform-origin:34px 30px"><line x1="34" y1="30" x2="42" y2="42" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="42" y1="42" x2="50" y2="56" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g></g></g>
+  pullup:<g><line x1="6" y1="6" x2="58" y2="6" stroke="#e8ff47" stroke-width="3" stroke-linecap="round" opacity=".3"/><g style="animation:pu2-body 1.4s ease-in-out infinite;transform-origin:32px 20px"><circle cx="32" cy="20" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="20" y1="14" x2="20" y2="6" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="44" y1="14" x2="44" y2="6" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="14" x2="20" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="14" x2="44" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="32" y1="26" x2="32" y2="42" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="42" x2="26" y2="56" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="42" x2="38" y2="56" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  dip:<g><line x1="8" y1="14" x2="8" y2="56" stroke="#e8ff47" stroke-width="2.5" opacity=".2" stroke-linecap="round"/><line x1="56" y1="14" x2="56" y2="56" stroke="#e8ff47" stroke-width="2.5" opacity=".2" stroke-linecap="round"/><g style="animation:dp-body 1.2s ease-in-out infinite;transform-origin:32px 24px"><circle cx="32" cy="10" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="16" x2="32" y2="32" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="22" x2="8" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="22" x2="56" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="32" x2="26" y2="48" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="32" x2="38" y2="48" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  crunch:<g><line x1="4" y1="36" x2="36" y2="36" stroke="#e8ff47" stroke-width="2" opacity=".2" stroke-linecap="round"/><g style="animation:cr-upper 1.2s ease-in-out infinite;transform-origin:30px 36px"><line x1="30" y1="36" x2="50" y2="28" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><circle cx="54" cy="22" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/></g><line x1="4" y1="36" x2="0" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="4" y1="36" x2="-2" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round" opacity=".4"/><line x1="24" y1="36" x2="30" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+  jump:<g style="animation:jp-body 1s ease-in-out infinite;transform-origin:32px 32px"><circle cx="32" cy="8" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="14" x2="32" y2="30" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="22" x2="16" y2="16" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="22" x2="48" y2="16" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="30" x2="26" y2="48" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="30" x2="38" y2="48" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+  lateral:<g><circle cx="32" cy="10" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="16" x2="32" y2="34" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><g style="animation:la-arm 1.2s ease-in-out infinite;transform-origin:30px 22px"><line x1="30" y1="22" x2="12" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><circle cx="10" cy="22" r="2.5" fill="#e8ff47" opacity=".7"/></g><g style="animation:la-arm 1.2s ease-in-out infinite reverse;transform-origin:34px 22px"><line x1="34" y1="22" x2="52" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><circle cx="54" cy="22" r="2.5" fill="#e8ff47" opacity=".7"/></g><line x1="30" y1="34" x2="26" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="34" x2="38" y2="50" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+  fly:<g><circle cx="32" cy="14" r="6" fill="none" stroke="#e8ff47" stroke-width="2.5"/><line x1="32" y1="20" x2="32" y2="36" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/><g style="animation:fl-arm 1.2s ease-in-out infinite;transform-origin:30px 26px"><line x1="30" y1="26" x2="10" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><g style="animation:fl-arm 1.2s ease-in-out infinite reverse;transform-origin:34px 26px"><line x1="34" y1="26" x2="54" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g><line x1="30" y1="36" x2="26" y2="52" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="36" x2="38" y2="52" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>`;
+  const parts=t.split('\n').map(l=>l.trim()).filter(l=>l);
+  const map={};
+  parts.forEach(p=>{const i=p.indexOf(':');if(i>0){map[p.slice(0,i)]=p.slice(i+1);}});
+  const inner=map[type]||map['jump'];
+  return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
+
+// ── APP INIT ─────────────────────────────────────────────
+function initApp(){
+  loadS();
+  // Nav
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>showScreen(btn.dataset.screen));
+  });
+  // Library search
+  document.getElementById('lib-search').addEventListener('input',filterLib);
+  // New plan button
+  document.getElementById('new-plan-btn').addEventListener('click',()=>{
+    document.getElementById('new-plan-name').value='';
+    openModal('modal-newplan');
+  });
+  document.getElementById('create-plan-btn').addEventListener('click',createPlan);
+  document.getElementById('confirm-add-btn').addEventListener('click',confirmAdd);
+  document.getElementById('player-next').addEventListener('click',playerNext);
+  document.getElementById('player-prev').addEventListener('click',playerPrev);
+  document.getElementById('player-exit').addEventListener('click',()=>closeModal('modal-player'));
+  // Close modals on overlay click
+  document.querySelectorAll('.overlay').forEach(o=>{
+    o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id);});
+  });
+  renderWeek();
+  renderLib();
+  renderPlans();
+  updateBadge();
+}
+
+// ── NAVIGATION ───────────────────────────────────────────
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+}
+
+// ── WEEK SCREEN ───────────────────────────────────────────
+function getTodayKey(){
+  const d=new Date().getDay();
+  return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d];
+}
+function renderWeek(){
+  const todayKey=getTodayKey();
+  const banner=document.getElementById('today-banner');
+  const grid=document.getElementById('week-grid');
+  banner.innerHTML='';
+  grid.innerHTML='';
+  // Today banner
+  const tw=S.weekPlan[todayKey];
+  if(tw&&tw.exercises.length){
+    banner.innerHTML=`<div class="today-banner">
+      <div>
+        <div class="today-label">Today · ${WLABELS[todayKey]}</div>
+        <div class="today-name">${tw.name||'Workout'}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px">${tw.exercises.length} exercise${tw.exercises.length!==1?'s':''}</div>
+      </div>
+      <button class="start-btn" onclick="startWorkout('${todayKey}')">▶ START</button>
+    </div>`;
+  }
+  WKEYS.forEach(key=>{
+    const w=S.weekPlan[key];
+    const isToday=key===todayKey;
+    const div=document.createElement('div');
+    div.className='day-card'+(w?' has-workout':'');
+    div.id='dc-'+key;
+    let exHTML='';
+    if(w&&w.exercises.length){
+      exHTML=w.exercises.map((ex,i)=>{
+        const e=EX.find(x=>x.id===ex.exId);
+        return `<div class="day-ex-item">
+          <div class="mini-anim">${svg(e?.anim||'jump',36)}</div>
+          <div class="day-ex-info">
+            <div class="day-ex-name">${e?.name||ex.exId}</div>
+            <div class="day-ex-sets">${ex.sets} sets × ${ex.reps} reps · ${ex.rest}s rest</div>
+          </div>
+          <button class="rm-btn" onclick="rmEx('${key}',${i})">×</button>
+        </div>`;
+      }).join('');
+    } else if(w){
+      exHTML='<div style="color:var(--text3);font-size:13px;padding:8px 0">No exercises yet — add some!</div>';
+    }
+    let actionsHTML=w
+      ?`<div class="day-actions">
+          <button class="btn-sm btn-accent" onclick="goAddEx('${key}')">+ Exercise</button>
+          ${w.exercises.length?`<button class="btn-sm btn-ghost" onclick="startWorkout('${key}')">▶ Start</button>`:''}
+          <button class="btn-sm btn-danger" onclick="clearDay('${key}')">Clear</button>
+        </div>`
+      :`<div style="padding-top:8px"><button class="btn-sm btn-accent" style="width:100%" onclick="goAddEx('${key}')">+ Add Workout</button></div>`;
+    div.innerHTML=`
+      <div class="day-header" onclick="toggleDay('${key}')">
+        <div class="day-label">
+          <div class="day-dot ${isToday?'today':''}"></div>
+          <div>
+            <div class="day-name">${WLABELS[key]}</div>
+            <div class="day-meta">${w?(w.name||'Workout')+' · '+w.exercises.length+' exercises':'Rest Day'}</div>
+          </div>
+        </div>
+        <svg class="day-chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="day-content">
+        ${w?`<div>${exHTML}</div>${actionsHTML}`:`<div class="rest-badge">😴 Rest & Recover</div>${actionsHTML}`}
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+function toggleDay(key){document.getElementById('dc-'+key).classList.toggle('open');}
+function clearDay(key){if(confirm('Remove all exercises from '+WLABELS[key]+'?')){S.weekPlan[key]=null;saveS();renderWeek();}}
+function rmEx(key,idx){
+  S.weekPlan[key].exercises.splice(idx,1);
+  saveS();renderWeek();
+  setTimeout(()=>{const c=document.getElementById('dc-'+key);if(c)c.classList.add('open');},50);
+}
+function goAddEx(key){
+  _targetDay=key;
+  showScreen('library');
+}
+
+// ── LIBRARY SCREEN ────────────────────────────────────────
+let _activeFilter='All';
+let _pendingEx=null;
+let _pendingDay=null;
+let _targetDay=null;
+
+function renderLib(){
+  const chips=document.getElementById('muscle-chips');
+  chips.innerHTML=MUSCLES.map(m=>`<div class="chip${m===_activeFilter?' active':''}" onclick="setFilter('${m}')">${m}</div>`).join('');
+  filterLib();
+}
+function setFilter(m){_activeFilter=m;renderLib();}
+function filterLib(){
+  const q=document.getElementById('lib-search').value.toLowerCase();
+  const filtered=EX.filter(e=>{
+    const mok=_activeFilter==='All'||e.muscle===_activeFilter;
+    const sok=!q||e.name.toLowerCase().includes(q)||e.muscle.toLowerCase().includes(q)||e.equipment.toLowerCase().includes(q);
+    return mok&&sok;
+  });
+  const list=document.getElementById('ex-list');
+  if(!filtered.length){
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Nothing Found</div><div class="empty-desc">Try a different search or filter.</div></div>';
+    return;
+  }
+  list.innerHTML=filtered.map(e=>`
+    <div class="ex-card" onclick="openDetail('${e.id}')">
+      <div class="anim-box">${svg(e.anim,64)}</div>
+      <div class="ex-info">
+        <div class="ex-name">${e.name}</div>
+        <div class="ex-tags"><span class="tag m">${e.muscle}</span><span class="tag e">${e.equipment}</span></div>
+      </div>
+      <button class="add-btn" onclick="event.stopPropagation();openAdd('${e.id}')">+</button>
+    </div>`).join('');
+}
+
+// ── EXERCISE DETAIL ───────────────────────────────────────
+function openDetail(id){
+  const e=EX.find(x=>x.id===id);if(!e)return;
+  document.getElementById('detail-anim').innerHTML=svg(e.anim,120);
+  document.getElementById('detail-name').textContent=e.name;
+  document.getElementById('detail-desc').textContent=e.desc;
+  document.getElementById('detail-muscles').innerHTML=e.muscles.map(m=>`<span class="tag m">${m}</span>`).join('');
+  document.getElementById('detail-add-btn').onclick=()=>{closeModal('modal-detail');openAdd(id);};
+  openModal('modal-detail');
+}
+
+// ── ADD TO DAY MODAL ──────────────────────────────────────
+function openAdd(id){
+  _pendingEx=id;
+  const e=EX.find(x=>x.id===id);
+  document.getElementById('modal-add-title').textContent='Add: '+e.name;
+  document.getElementById('modal-add-anim').innerHTML=svg(e.anim,80);
+  document.getElementById('modal-add-muscles').textContent=e.muscles.join(' · ');
+  // Day chips
+  document.getElementById('day-chips').innerHTML=WKEYS.map(k=>`
+    <div class="chip${_targetDay===k?' active':''}" id="dc2-${k}" onclick="pickDay('${k}')">${WLABELS[k].slice(0,3)}</div>`).join('');
+  _pendingDay=_targetDay||null;
+  openModal('modal-add');
+}
+function pickDay(k){
+  _pendingDay=k;
+  document.querySelectorAll('#day-chips .chip').forEach(c=>c.classList.remove('active'));
+  document.getElementById('dc2-'+k).classList.add('active');
+}
+function confirmAdd(){
+  if(!_pendingDay){alert('Pick a day first!');return;}
+  const sets=parseInt(document.getElementById('inp-sets').value)||3;
+  const reps=parseInt(document.getElementById('inp-reps').value)||10;
+  const rest=parseInt(document.getElementById('inp-rest').value)||60;
+  const e=EX.find(x=>x.id===_pendingEx);
+  if(!S.weekPlan[_pendingDay])S.weekPlan[_pendingDay]={name:e.muscle+' Day',exercises:[]};
+  S.weekPlan[_pendingDay].exercises.push({exId:_pendingEx,sets,reps,rest});
+  saveS();
+  closeModal('modal-add');
+  if(_targetDay){
+    _targetDay=null;
+    showScreen('week');
+    setTimeout(()=>{const c=document.getElementById('dc-'+_pendingDay);if(c){c.classList.add('open');c.scrollIntoView({behavior:'smooth'});}},100);
+  }
+  renderWeek();
+  _pendingDay=null;_pendingEx=null;
+}
+
+// ── PLANS SCREEN ──────────────────────────────────────────
+function renderPlans(){
+  const list=document.getElementById('plans-list');
+  document.getElementById('plans-sub').textContent=S.plans.length+' plan'+(S.plans.length!==1?'s':'')+' saved';
+  if(!S.plans.length){
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No Plans Yet</div><div class="empty-desc">Create a plan to save your weekly schedule and switch between programs.</div></div>';
+    return;
+  }
+  list.innerHTML=S.plans.map((p,i)=>{
+    const active=WKEYS.filter(k=>p.weekPlan[k]&&p.weekPlan[k].exercises.length);
+    const total=WKEYS.reduce((s,k)=>s+(p.weekPlan[k]?.exercises.length||0),0);
+    return `<div class="plan-card" onclick="loadPlan(${i})">
+      <div class="plan-card-top">
+        <div>
+          <div class="plan-name">${p.name}</div>
+          <div class="plan-stats">${active.length} training days · ${total} exercises ${S.activePlanId===p.id?'· <span style="color:var(--accent)">Active</span>':''}</div>
+        </div>
+        <button class="plan-del" onclick="event.stopPropagation();delPlan(${i})">🗑</button>
+      </div>
+      <div class="plan-dots">${WKEYS.map(k=>`<div class="plan-dot${active.includes(k)?' on':''}">${WSHORT[k]}</div>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+function createPlan(){
+  const name=document.getElementById('new-plan-name').value.trim();
+  if(!name)return;
+  const p={id:Date.now().toString(),name,weekPlan:JSON.parse(JSON.stringify(S.weekPlan))};
+  S.plans.push(p);S.activePlanId=p.id;saveS();
+  closeModal('modal-newplan');renderPlans();updateBadge();
+}
+function loadPlan(i){
+  const p=S.plans[i];
+  S.weekPlan=JSON.parse(JSON.stringify(p.weekPlan));
+  S.activePlanId=p.id;saveS();
+  showScreen('week');renderWeek();updateBadge();
+}
+function delPlan(i){
+  if(!confirm('Delete this plan?'))return;
+  S.plans.splice(i,1);saveS();renderPlans();
+}
+function updateBadge(){
+  const b=document.getElementById('active-badge');
+  const p=S.plans.find(x=>x.id===S.activePlanId);
+  b.textContent=p?'📋 '+p.name:'';
+}
+
+// ── WORKOUT PLAYER ────────────────────────────────────────
+let P={exercises:[],exIdx:0,setIdx:0,resting:false,timer:null,restLeft:0};
+function startWorkout(key){
+  const w=S.weekPlan[key];if(!w||!w.exercises.length)return;
+  P={exercises:w.exercises,exIdx:0,setIdx:0,resting:false,timer:null,restLeft:0};
+  document.getElementById('player-day').textContent=WLABELS[key];
+  renderPlayer();openModal('modal-player');
+}
+function renderPlayer(){
+  const total=P.exercises.reduce((s,e)=>s+e.sets,0);
+  const done=P.exercises.slice(0,P.exIdx).reduce((s,e)=>s+e.sets,0)+P.setIdx;
+  document.getElementById('player-prog-lbl').textContent=done+'/'+total+' sets';
+  document.getElementById('player-prog-bar').style.width=(total?Math.round(done/total*100):0)+'%';
+  const ex=P.exercises[P.exIdx];
+  const e=EX.find(x=>x.id===ex.exId);
+  if(P.resting){
+    document.getElementById('player-content').innerHTML=`
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:40px;margin-bottom:12px">😮‍💨</div>
+        <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:28px;color:var(--text2)">REST</div>
+        <div class="timer-num" id="rest-num">${P.restLeft}</div>
+        <div class="timer-lbl">seconds remaining</div>
+        <div style="font-size:13px;color:var(--text2)">Next: ${e?.name}</div>
+      </div>`;
+    document.getElementById('player-next').textContent='Skip Rest →';
+    document.getElementById('player-prev').style.visibility='hidden';
   } else {
-    const inp = document.getElementById('pass-input');
-    inp.classList.add('error');
-    errEl.textContent = 'Incorrect password. Try again.';
-    setTimeout(() => { inp.classList.remove('error'); inp.value = ''; }, 600);
+    const circles=Array.from({length:ex.sets},(_,i)=>{
+      let c='set-circle';
+      if(i<P.setIdx)c+=' done';
+      else if(i===P.setIdx)c+=' cur';
+      return `<div class="${c}">${i+1}</div>`;
+    }).join('');
+    document.getElementById('player-content').innerHTML=`
+      <div style="text-align:center;padding:10px 0">
+        <div class="player-anim">${svg(e?.anim||'jump',160)}</div>
+        <div class="player-ex-name">${e?.name||ex.exId}</div>
+        <div class="player-info">Set ${P.setIdx+1} of ${ex.sets} · ${ex.reps} reps</div>
+        <div class="set-circles">${circles}</div>
+        <div style="font-size:13px;color:var(--text3)">${ex.rest}s rest between sets</div>
+      </div>`;
+    document.getElementById('player-next').textContent='Done Set ✓';
+    document.getElementById('player-prev').style.visibility='';
   }
 }
-
-let eyeVisible = false;
-function toggleEye() {
-  eyeVisible = !eyeVisible;
-  const inp = document.getElementById('pass-input');
-  inp.type = eyeVisible ? 'text' : 'password';
-  document.getElementById('eye-btn').textContent = eyeVisible ? '🙈' : '👁';
+function playerNext(){
+  if(P.resting){clearInterval(P.timer);P.resting=false;renderPlayer();return;}
+  const ex=P.exercises[P.exIdx];
+  P.setIdx++;
+  if(P.setIdx>=ex.sets){
+    P.exIdx++;P.setIdx=0;
+    if(P.exIdx>=P.exercises.length){
+      clearInterval(P.timer);
+      document.getElementById('player-content').innerHTML=`<div style="text-align:center;padding:40px 0"><div style="font-size:60px;margin-bottom:16px">🏆</div><div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:42px;color:var(--accent)">WORKOUT DONE!</div><div style="font-size:16px;color:var(--text2);margin-top:8px">Incredible work. Rest up.</div></div>`;
+      document.getElementById('player-next').textContent='Close';
+      document.getElementById('player-next').onclick=()=>closeModal('modal-player');
+      document.getElementById('player-prev').style.visibility='hidden';
+      document.getElementById('player-prog-bar').style.width='100%';
+      return;
+    }
+  }
+  if(ex.rest>0){
+    P.resting=true;P.restLeft=ex.rest;renderPlayer();
+    P.timer=setInterval(()=>{
+      P.restLeft--;
+      const el=document.getElementById('rest-num');
+      if(el)el.textContent=P.restLeft;
+      if(P.restLeft<=0){clearInterval(P.timer);P.resting=false;renderPlayer();}
+    },1000);
+  } else {renderPlayer();}
+}
+function playerPrev(){
+  if(P.resting){clearInterval(P.timer);P.resting=false;}
+  if(P.setIdx>0)P.setIdx--;
+  else if(P.exIdx>0){P.exIdx--;P.setIdx=P.exercises[P.exIdx].sets-1;}
+  renderPlayer();
 }
 
-// Focus input on load
-setTimeout(() => document.getElementById('pass-input').focus(), 300);
+// ── MODALS ────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow='';
+  if(id==='modal-player'&&P.timer)clearInterval(P.timer);
+}
 </script>
 </body>
 </html>
