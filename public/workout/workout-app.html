@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IronWeek">
+<title>IronWeek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface2: #1e1e1e;
+  --surface3: #2a2a2a;
+  --accent: #e8ff47;
+  --accent2: #ff6b35;
+  --text: #f0f0f0;
+  --text2: #888;
+  --text3: #555;
+  --radius: 16px;
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- NAV ---- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: rgba(14,14,14,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid #222;
+  display: flex;
+  padding: 10px 0 calc(10px + var(--safe-bottom));
+  z-index: 100;
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px 0;
+}
+.nav-btn.active { color: var(--accent); }
+.nav-btn svg { width: 22px; height: 22px; }
+
+/* ---- SCREENS ---- */
+.screen {
+  display: none;
+  padding: 0 0 calc(80px + var(--safe-bottom));
+  min-height: 100dvh;
+}
+.screen.active { display: block; }
+
+/* ---- HEADER ---- */
+.app-header {
+  padding: 56px 20px 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.app-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  line-height: 1;
+}
+.header-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+/* ---- CARDS ---- */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 0 16px 12px;
+}
+.card-sm {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+/* ---- WEEK PLAN SCREEN ---- */
+.week-grid {
+  padding: 0 16px;
+}
+.day-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  overflow: hidden;
+  border: 1px solid #1f1f1f;
+  transition: border-color 0.2s;
+}
+.day-card.has-workout { border-color: #333; }
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.day-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.day-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--text3);
+}
+.day-dot.active { background: var(--accent); }
+.day-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.day-workout-name {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 1px;
+}
+.day-chevron {
+  color: var(--text3);
+  transition: transform 0.2s;
+}
+.day-card.open .day-chevron { transform: rotate(180deg); }
+.day-content {
+  display: none;
+  padding: 0 16px 14px;
+  border-top: 1px solid #1f1f1f;
+}
+.day-card.open .day-content { display: block; }
+.day-exercises { margin-bottom: 10px; }
+.day-exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #1e1e1e;
+}
+.day-exercise-item:last-child { border-bottom: none; }
+.exercise-mini-anim {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.day-exercise-info { flex: 1; }
+.day-exercise-name { font-size: 14px; font-weight: 500; }
+.day-exercise-sets { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.remove-ex-btn {
+  background: none; border: none;
+  color: var(--text3); font-size: 18px; cursor: pointer;
+  padding: 4px;
+}
+.day-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.btn-sm {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-accent { background: var(--accent); color: #0a0a0a; }
+.btn-accent:active { transform: scale(0.97); background: #d4eb00; }
+.btn-ghost { background: var(--surface3); color: var(--text2); }
+.btn-ghost:active { transform: scale(0.97); }
+.btn-danger { background: #2a1212; color: #ff5555; }
+
+.rest-badge {
+  text-align: center;
+  padding: 10px;
+  color: var(--text3);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ---- EXERCISE LIBRARY ---- */
+.search-bar {
+  margin: 0 16px 12px;
+  position: relative;
+}
+.search-bar input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 12px 16px 12px 42px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-bar input:focus { border-color: var(--accent); }
+.search-bar .search-icon {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-chips::-webkit-scrollbar { display: none; }
+.chip {
+  white-space: nowrap;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid #333;
+  background: var(--surface);
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.chip.active { background: var(--accent); color: #0a0a0a; border-color: var(--accent); font-weight: 600; }
+
+.exercise-list { padding: 0 16px; }
+.exercise-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  border: 1px solid #1f1f1f;
+  transition: border-color 0.2s, transform 0.15s;
+  -webkit-user-select: none;
+}
+.exercise-card:active { transform: scale(0.98); border-color: var(--accent); }
+
+/* ---- EXERCISE ANIMATIONS ---- */
+.anim-box {
+  width: 64px; height: 64px;
+  border-radius: 12px;
+  background: var(--surface2);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stick-figure {
+  position: absolute;
+  width: 100%; height: 100%;
+}
+
+/* Pushup animation */
+@keyframes pushup-body {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(8px) rotate(2deg); }
+}
+@keyframes pushup-arm {
+  0%,100% { transform-origin: top; transform: rotate(40deg); }
+  50% { transform-origin: top; transform: rotate(70deg); }
+}
+.anim-pushup .body { animation: pushup-body 1.2s ease-in-out infinite; }
+.anim-pushup .arm { animation: pushup-arm 1.2s ease-in-out infinite; }
+
+/* Squat animation */
+@keyframes squat-body {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(12px) scaleY(0.85); }
+}
+@keyframes squat-leg {
+  0%,100% { transform-origin: top; transform: rotate(10deg); }
+  50% { transform-origin: top; transform: rotate(55deg); }
+}
+.anim-squat .body { animation: squat-body 1.4s ease-in-out infinite; }
+.anim-squat .leg { animation: squat-leg 1.4s ease-in-out infinite; }
+
+/* Curl animation */
+@keyframes curl-arm {
+  0%,100% { transform-origin: top; transform: rotate(20deg); }
+  50% { transform-origin: top; transform: rotate(-40deg); }
+}
+.anim-curl .arm { animation: curl-arm 1s ease-in-out infinite; }
+
+/* Run animation */
+@keyframes run-body {
+  0%,100% { transform: rotate(-3deg) translateX(-2px); }
+  50% { transform: rotate(3deg) translateX(2px); }
+}
+@keyframes run-leg1 {
+  0%,100% { transform-origin: top; transform: rotate(-30deg); }
+  50% { transform-origin: top; transform: rotate(50deg); }
+}
+@keyframes run-leg2 {
+  0%,100% { transform-origin: top; transform: rotate(50deg); }
+  50% { transform-origin: top; transform: rotate(-30deg); }
+}
+.anim-run .body { animation: run-body 0.5s ease-in-out infinite; }
+.anim-run .leg1 { animation: run-leg1 0.5s ease-in-out infinite; }
+.anim-run .leg2 { animation: run-leg2 0.5s ease-in-out infinite; }
+
+/* Row animation */
+@keyframes row-body {
+  0%,100% { transform: translateX(0); }
+  50% { transform: translateX(-6px); }
+}
+@keyframes row-arm {
+  0%,100% { transform-origin: top; transform: rotate(60deg); }
+  50% { transform-origin: top; transform: rotate(10deg); }
+}
+.anim-row .body { animation: row-body 1.2s ease-in-out infinite; }
+.anim-row .arm { animation: row-arm 1.2s ease-in-out infinite; }
+
+/* Overhead press animation */
+@keyframes press-arm {
+  0%,100% { transform-origin: top; transform: rotate(80deg); }
+  50% { transform-origin: top; transform: rotate(10deg); }
+}
+.anim-press .arm { animation: press-arm 1.2s ease-in-out infinite; }
+
+/* Plank animation */
+@keyframes plank-pulse {
+  0%,100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.02); }
+}
+.anim-plank .body { animation: plank-pulse 2s ease-in-out infinite; }
+
+/* Deadlift animation */
+@keyframes deadlift-body {
+  0%,100% { transform: rotate(0deg) translateY(0); }
+  50% { transform: rotate(-35deg) translateY(8px); }
+}
+.anim-deadlift .body { animation: deadlift-body 1.6s ease-in-out infinite; }
+
+/* Lunge animation */
+@keyframes lunge-body {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+@keyframes lunge-leg1 {
+  0%,100% { transform-origin: top; transform: rotate(0deg); }
+  50% { transform-origin: top; transform: rotate(40deg); }
+}
+@keyframes lunge-leg2 {
+  0%,100% { transform-origin: top; transform: rotate(0deg); }
+  50% { transform-origin: top; transform: rotate(-60deg); }
+}
+.anim-lunge .body { animation: lunge-body 1.4s ease-in-out infinite; }
+.anim-lunge .leg1 { animation: lunge-leg1 1.4s ease-in-out infinite; }
+.anim-lunge .leg2 { animation: lunge-leg2 1.4s ease-in-out infinite; }
+
+/* Pullup animation */
+@keyframes pullup-body {
+  0%,100% { transform: translateY(6px); }
+  50% { transform: translateY(-4px); }
+}
+.anim-pullup .body { animation: pullup-body 1.4s ease-in-out infinite; }
+
+/* Dip animation */
+@keyframes dip-body {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+.anim-dip .body { animation: dip-body 1.2s ease-in-out infinite; }
+
+/* Crunch animation */
+@keyframes crunch-upper {
+  0%,100% { transform-origin: bottom; transform: rotate(0deg); }
+  50% { transform-origin: bottom; transform: rotate(-35deg); }
+}
+.anim-crunch .upper { animation: crunch-upper 1.2s ease-in-out infinite; }
+
+/* Jump animation */
+@keyframes jump-body {
+  0%,40% { transform: translateY(0); }
+  60% { transform: translateY(-14px); }
+  80%,100% { transform: translateY(0); }
+}
+.anim-jump .body { animation: jump-body 1s ease-in-out infinite; }
+
+/* Lateral raise animation */
+@keyframes lateral-arm {
+  0%,100% { transform-origin: top center; transform: rotate(0deg); }
+  50% { transform-origin: top center; transform: rotate(80deg); }
+}
+.anim-lateral .arm1 { animation: lateral-arm 1.2s ease-in-out infinite; }
+.anim-lateral .arm2 { animation: lateral-arm 1.2s ease-in-out infinite reverse; }
+
+/* Fly animation */
+@keyframes fly-arm {
+  0%,100% { transform-origin: top; transform: rotate(70deg); }
+  50% { transform-origin: top; transform: rotate(10deg); }
+}
+.anim-fly .arm1 { animation: fly-arm 1.2s ease-in-out infinite; }
+.anim-fly .arm2 { animation: fly-arm 1.2s ease-in-out infinite reverse; }
+
+.exercise-info { flex: 1 }
+.exercise-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
+.exercise-meta {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.exercise-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--surface3);
+  color: var(--text2);
+  font-weight: 500;
+}
+.exercise-tag.muscle { background: #1a1a2e; color: #8888ff; }
+.exercise-tag.equip { background: #1a2a1a; color: #66cc66; }
+
+.add-ex-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.add-ex-btn:active { transform: scale(0.9); }
+.add-ex-btn svg { color: #0a0a0a; }
+
+/* ---- MY PLANS ---- */
+.plans-list { padding: 0 16px; }
+.plan-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #1f1f1f;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.plan-card:active { border-color: var(--accent); }
+.plan-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.plan-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+.plan-delete {
+  background: none; border: none;
+  color: var(--text3); cursor: pointer; font-size: 18px; padding: 0;
+}
+.plan-days-preview {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.plan-day-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--surface3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+}
+.plan-day-dot.active { background: var(--accent); color: #0a0a0a; }
+.plan-stats { font-size: 12px; color: var(--text2); margin-top: 8px; }
+.new-plan-btn {
+  width: calc(100% - 32px);
+  margin: 0 16px 16px;
+  padding: 16px;
+  border-radius: var(--radius);
+  border: 2px dashed #333;
+  background: none;
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.new-plan-btn:active { border-color: var(--accent); color: var(--accent); }
+
+/* ---- MODALS ---- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: flex-end;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 20px calc(20px + var(--safe-bottom));
+  width: 100%;
+  max-height: 90dvh;
+  overflow-y: auto;
+  animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.modal-handle {
+  width: 36px; height: 4px;
+  border-radius: 2px;
+  background: #444;
+  margin: 0 auto 20px;
+}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+.modal-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: var(--accent); }
+.modal-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.15s;
+}
+.modal-btn.primary { background: var(--accent); color: #0a0a0a; }
+.modal-btn.primary:active { transform: scale(0.98); background: #d4eb00; }
+.modal-btn.secondary { background: var(--surface3); color: var(--text2); }
+
+/* Sets row inputs */
+.sets-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.sets-row label { font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px; }
+
+/* Exercise detail modal */
+.ex-detail-anim {
+  width: 120px; height: 120px;
+  border-radius: 20px;
+  background: var(--surface2);
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.ex-detail-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.ex-detail-desc {
+  font-size: 14px;
+  color: var(--text2);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.muscle-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Active plan day banner */
+.today-banner {
+  margin: 0 16px 12px;
+  background: linear-gradient(135deg, #1a1f00, #252e00);
+  border: 1px solid #3a4a00;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.today-label {
+  font-size: 12px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.today-workout {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+.start-btn {
+  background: var(--accent);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Section label */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 16px 8px;
+  margin-top: 8px;
+}
+
+/* No plans state */
+.empty-state {
+  text-align: center;
+  padding: 60px 32px;
+  color: var(--text3);
+}
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--text2); margin-bottom: 8px; }
+.empty-desc { font-size: 14px; line-height: 1.6; }
+
+/* Log workout modal step indicator */
+.step-dots {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 16px;
+}
+.step-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--surface3);
+  transition: background 0.2s, width 0.2s;
+}
+.step-dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
+
+/* Workout player */
+.player-exercise {
+  text-align: center;
+  padding: 20px 0;
+}
+.player-ex-anim {
+  width: 160px; height: 160px;
+  border-radius: 24px;
+  background: var(--surface2);
+  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.player-ex-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.player-sets-info { font-size: 18px; color: var(--text2); }
+.set-counter {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0;
+}
+.set-circle {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  color: var(--text3);
+  transition: all 0.2s;
+}
+.set-circle.done { background: var(--accent); border-color: var(--accent); color: #0a0a0a; }
+.set-circle.current { border-color: var(--accent); color: var(--accent); }
+
+.timer-display {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 64px;
+  letter-spacing: 4px;
+  text-align: center;
+  color: var(--accent);
+  margin: 10px 0;
+}
+.timer-label {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.progress-bar-wrap {
+  background: var(--surface3);
+  border-radius: 4px;
+  height: 4px;
+  margin: 0 16px 16px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.4s;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 0; }
+</style>
+</head>
+<body>
+
+<!-- ===== WEEK SCREEN ===== -->
+<div id="screen-week" class="screen active">
+  <div class="app-header">
+    <div>
+      <div class="app-title">IRONWEEK</div>
+      <div class="header-sub">Your weekly plan</div>
+    </div>
+    <div id="active-plan-badge" style="font-size:12px;color:var(--text2);text-align:right;"></div>
+  </div>
+
+  <div id="today-banner-wrap"></div>
+
+  <div class="section-label">THIS WEEK</div>
+  <div class="week-grid" id="week-grid"></div>
+</div>
+
+<!-- ===== LIBRARY SCREEN ===== -->
+<div id="screen-library" class="screen">
+  <div class="app-header">
+    <div>
+      <div class="app-title">EXERCISES</div>
+      <div class="header-sub">Tap to add to a day</div>
+    </div>
+  </div>
+  <div class="search-bar">
+    <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="search" id="lib-search" placeholder="Search exercises…" oninput="filterLibrary()">
+  </div>
+  <div class="filter-chips" id="muscle-chips"></div>
+  <div class="exercise-list" id="exercise-list"></div>
+</div>
+
+<!-- ===== PLANS SCREEN ===== -->
+<div id="screen-plans" class="screen">
+  <div class="app-header">
+    <div>
+      <div class="app-title">MY PLANS</div>
+      <div class="header-sub" id="plans-count-label"></div>
+    </div>
+  </div>
+  <button class="new-plan-btn" onclick="openNewPlanModal()">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Create New Plan
+  </button>
+  <div class="plans-list" id="plans-list"></div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showScreen('week')" id="nav-week">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Week
+  </button>
+  <button class="nav-btn" onclick="showScreen('library')" id="nav-library">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h8"/><circle cx="17" cy="17" r="3"/><path d="m19.5 19.5 1.5 1.5"/></svg>
+    Library
+  </button>
+  <button class="nav-btn" onclick="showScreen('plans')" id="nav-plans">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Plans
+  </button>
+</nav>
+
+<!-- ===== MODAL: Add to Day ===== -->
+<div class="modal-overlay" id="modal-add-to-day">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-ex-name-title">Add Exercise</div>
+    <div id="modal-ex-anim-preview" style="width:80px;height:80px;border-radius:16px;background:var(--surface2);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;"></div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:16px;text-align:center;" id="modal-ex-muscles"></div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:8px;font-weight:600;">ADD TO DAY</div>
+    <div id="day-selector" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:8px;font-weight:600;">SETS & REPS</div>
+    <div class="sets-row">
+      <div>
+        <label>Sets</label>
+        <input type="number" class="modal-input" id="inp-sets" value="3" min="1" max="20" style="margin:0;text-align:center;">
+      </div>
+      <div>
+        <label>Reps</label>
+        <input type="number" class="modal-input" id="inp-reps" value="10" min="1" max="100" style="margin:0;text-align:center;">
+      </div>
+      <div>
+        <label>Rest (s)</label>
+        <input type="number" class="modal-input" id="inp-rest" value="60" min="0" max="300" step="15" style="margin:0;text-align:center;">
+      </div>
+    </div>
+    <button class="modal-btn primary" onclick="confirmAddExercise()">Add Exercise</button>
+    <button class="modal-btn secondary" onclick="closeModal('modal-add-to-day')">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== MODAL: New Plan ===== -->
+<div class="modal-overlay" id="modal-new-plan">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">NEW PLAN</div>
+    <input type="text" class="modal-input" id="new-plan-name" placeholder="e.g. Push Pull Legs" maxlength="30">
+    <button class="modal-btn primary" onclick="createPlan()">Create Plan</button>
+    <button class="modal-btn secondary" onclick="closeModal('modal-new-plan')">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== MODAL: Exercise Detail ===== -->
+<div class="modal-overlay" id="modal-ex-detail">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div id="ex-detail-anim-wrap" class="ex-detail-anim"></div>
+    <div class="ex-detail-name" id="ex-detail-name"></div>
+    <div class="ex-detail-desc" id="ex-detail-desc"></div>
+    <div class="muscle-groups" id="ex-detail-muscles"></div>
+    <button class="modal-btn primary" id="ex-detail-add-btn">Add to Plan</button>
+    <button class="modal-btn secondary" onclick="closeModal('modal-ex-detail')">Close</button>
+  </div>
+</div>
+
+<!-- ===== MODAL: Workout Player ===== -->
+<div class="modal-overlay" id="modal-player" style="align-items:center;">
+  <div class="modal" style="border-radius:24px;max-height:95dvh;">
+    <div class="modal-handle"></div>
+    <div id="player-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--text2);" id="player-day-name"></div>
+      <div style="font-size:13px;color:var(--text2);" id="player-progress-label"></div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="player-progress-bar"></div></div>
+    <div id="player-content"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="modal-btn secondary" id="player-prev-btn" onclick="playerPrev()" style="flex:0.5">Back</button>
+      <button class="modal-btn primary" id="player-next-btn" onclick="playerNext()" style="flex:1">Done Set ✓</button>
+    </div>
+    <button class="modal-btn secondary" onclick="closeModal('modal-player')" style="margin-top:8px;">Exit Workout</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA: Exercise Library
+// ============================================================
+const EXERCISES = [
+  // CHEST
+  { id:'bench-press', name:'Bench Press', muscle:'Chest', equipment:'Barbell', anim:'press', desc:'Lie on a flat bench. Lower the barbell to mid-chest, then press explosively upward. Keep shoulder blades retracted.', muscles:['Chest','Triceps','Front Delts'] },
+  { id:'incline-press', name:'Incline Bench Press', muscle:'Chest', equipment:'Barbell', anim:'press', desc:'Set bench to 30-45°. Press bar from upper chest. Targets upper pec fibers.', muscles:['Upper Chest','Triceps','Front Delts'] },
+  { id:'pushup', name:'Push-Up', muscle:'Chest', equipment:'Bodyweight', anim:'pushup', desc:'Place hands shoulder-width apart. Lower chest to floor, keeping core tight, then press up.', muscles:['Chest','Triceps','Core'] },
+  { id:'dumbbell-fly', name:'Dumbbell Fly', muscle:'Chest', equipment:'Dumbbell', anim:'fly', desc:'Lie flat, arms extended. Lower dumbbells in wide arc to chest level, squeeze pecs at top.', muscles:['Chest','Front Delts'] },
+  { id:'cable-crossover', name:'Cable Crossover', muscle:'Chest', equipment:'Cable', anim:'fly', desc:'Stand between cables. Pull handles together in front of chest in a hugging motion.', muscles:['Chest','Front Delts'] },
+  { id:'chest-dip', name:'Chest Dip', muscle:'Chest', equipment:'Bodyweight', anim:'dip', desc:'Lean forward on dip bars. Lower until shoulders are below elbows, press back up.', muscles:['Chest','Triceps','Shoulders'] },
+
+  // BACK
+  { id:'pullup', name:'Pull-Up', muscle:'Back', equipment:'Bodyweight', anim:'pullup', desc:'Hang from bar, hands wider than shoulder. Pull chin above bar, lower with control.', muscles:['Lats','Biceps','Rear Delts'] },
+  { id:'bent-row', name:'Barbell Row', muscle:'Back', equipment:'Barbell', anim:'row', desc:'Hinge at hips, bar under shoulders. Pull bar to lower chest, squeezing shoulder blades.', muscles:['Lats','Rhomboids','Biceps'] },
+  { id:'db-row', name:'Dumbbell Row', muscle:'Back', equipment:'Dumbbell', anim:'row', desc:'One hand and knee on bench. Drive elbow up, pulling dumbbell to hip.', muscles:['Lats','Rhomboids','Biceps'] },
+  { id:'lat-pulldown', name:'Lat Pulldown', muscle:'Back', equipment:'Cable', anim:'pullup', desc:'Grip bar wide. Pull to upper chest leading with elbows. Lean back slightly.', muscles:['Lats','Biceps'] },
+  { id:'deadlift', name:'Deadlift', muscle:'Back', equipment:'Barbell', anim:'deadlift', desc:'Bar over mid-foot. Hinge hips back, brace core, drive through floor to stand tall.', muscles:['Hamstrings','Glutes','Lower Back','Traps'] },
+  { id:'seated-cable-row', name:'Seated Cable Row', muscle:'Back', equipment:'Cable', anim:'row', desc:'Sit upright, pull handle to abdomen, squeeze back. Keep chest up.', muscles:['Mid Back','Rhomboids','Biceps'] },
+
+  // SHOULDERS
+  { id:'ohp', name:'Overhead Press', muscle:'Shoulders', equipment:'Barbell', anim:'press', desc:'Standing or seated, press bar from shoulders to overhead. Lock out fully at top.', muscles:['Front Delts','Side Delts','Triceps'] },
+  { id:'db-ohp', name:'Dumbbell Shoulder Press', muscle:'Shoulders', equipment:'Dumbbell', anim:'press', desc:'Press dumbbells from shoulder height overhead. Allows greater range of motion.', muscles:['Delts','Triceps'] },
+  { id:'lateral-raise', name:'Lateral Raise', muscle:'Shoulders', equipment:'Dumbbell', anim:'lateral', desc:'Stand tall, raise dumbbells to shoulder height in arc. Lead with elbows, not wrists.', muscles:['Side Delts'] },
+  { id:'front-raise', name:'Front Raise', muscle:'Shoulders', equipment:'Dumbbell', anim:'lateral', desc:'Raise dumbbells to eye level in front. Keep slight bend in elbow.', muscles:['Front Delts'] },
+  { id:'face-pull', name:'Face Pull', muscle:'Shoulders', equipment:'Cable', anim:'row', desc:'Pull rope to face, elbows high. Rotate hands outward at end. Great for shoulder health.', muscles:['Rear Delts','Rotator Cuff','Traps'] },
+  { id:'upright-row', name:'Upright Row', muscle:'Shoulders', equipment:'Barbell', anim:'row', desc:'Pull bar straight up to chin, elbows flaring out to sides.', muscles:['Side Delts','Traps'] },
+
+  // ARMS
+  { id:'barbell-curl', name:'Barbell Curl', muscle:'Arms', equipment:'Barbell', anim:'curl', desc:'Stand tall, curl bar from hips to chin. Keep elbows pinned at sides.', muscles:['Biceps','Forearms'] },
+  { id:'hammer-curl', name:'Hammer Curl', muscle:'Arms', equipment:'Dumbbell', anim:'curl', desc:'Neutral grip (thumbs up). Curl dumbbells alternately. Targets brachialis.', muscles:['Biceps','Brachialis','Forearms'] },
+  { id:'incline-curl', name:'Incline Dumbbell Curl', muscle:'Arms', equipment:'Dumbbell', anim:'curl', desc:'Sit on incline bench, arms hang behind torso. Full stretch at bottom. Great peak.', muscles:['Biceps'] },
+  { id:'tricep-pushdown', name:'Tricep Pushdown', muscle:'Arms', equipment:'Cable', anim:'press', desc:'Push cable bar or rope down to full lockout. Keep elbows at sides throughout.', muscles:['Triceps'] },
+  { id:'skull-crusher', name:'Skull Crusher', muscle:'Arms', equipment:'Barbell', anim:'press', desc:'Lie on bench, lower EZ-bar toward forehead. Extend back to start.', muscles:['Triceps'] },
+  { id:'tricep-dip', name:'Tricep Dip', muscle:'Arms', equipment:'Bodyweight', anim:'dip', desc:'Dip bars, body upright. Lower until elbows 90°, press back. Keep elbows close.', muscles:['Triceps','Chest'] },
+  { id:'concentration-curl', name:'Concentration Curl', muscle:'Arms', equipment:'Dumbbell', anim:'curl', desc:'Seated, elbow braced on inner thigh. Curl dumbbell slowly, squeeze at top.', muscles:['Biceps'] },
+
+  // LEGS
+  { id:'squat', name:'Back Squat', muscle:'Legs', equipment:'Barbell', anim:'squat', desc:'Bar on upper traps. Hinge knees and hips, sit to parallel or below. Drive through heels up.', muscles:['Quads','Glutes','Hamstrings'] },
+  { id:'front-squat', name:'Front Squat', muscle:'Legs', equipment:'Barbell', anim:'squat', desc:'Bar across front delts. Stay upright as you squat deep. More quad-dominant.', muscles:['Quads','Glutes','Core'] },
+  { id:'leg-press', name:'Leg Press', muscle:'Legs', equipment:'Machine', anim:'squat', desc:'Feet shoulder-width on platform. Press to near-lockout, lower controlled.', muscles:['Quads','Glutes','Hamstrings'] },
+  { id:'romanian-deadlift', name:'Romanian Deadlift', muscle:'Legs', equipment:'Barbell', anim:'deadlift', desc:'Slight knee bend, hinge hips back pushing bar down legs. Feel hamstring stretch.', muscles:['Hamstrings','Glutes','Lower Back'] },
+  { id:'lunge', name:'Lunge', muscle:'Legs', equipment:'Bodyweight', anim:'lunge', desc:'Step forward, lower rear knee toward floor. Push through front heel to return.', muscles:['Quads','Glutes','Hamstrings'] },
+  { id:'db-lunge', name:'Dumbbell Lunge', muscle:'Legs', equipment:'Dumbbell', anim:'lunge', desc:'Hold dumbbells at sides. Step forward and lower into lunge. Alternate legs.', muscles:['Quads','Glutes'] },
+  { id:'leg-curl', name:'Hamstring Curl', muscle:'Legs', equipment:'Machine', anim:'squat', desc:'Lying or seated. Curl legs against resistance. Full extension and contraction.', muscles:['Hamstrings'] },
+  { id:'leg-extension', name:'Leg Extension', muscle:'Legs', equipment:'Machine', anim:'squat', desc:'Seat adjusted so knees align with pivot. Extend until locked, lower slowly.', muscles:['Quads'] },
+  { id:'calf-raise', name:'Calf Raise', muscle:'Legs', equipment:'Bodyweight', anim:'jump', desc:'Stand on edge of step or flat ground. Rise onto toes, hold 1s, lower slowly.', muscles:['Calves'] },
+  { id:'goblet-squat', name:'Goblet Squat', muscle:'Legs', equipment:'Dumbbell', anim:'squat', desc:'Hold dumbbell at chest. Squat deep, elbows inside knees. Great for mobility.', muscles:['Quads','Glutes','Core'] },
+  { id:'hip-thrust', name:'Hip Thrust', muscle:'Legs', equipment:'Barbell', anim:'deadlift', desc:'Shoulders on bench, bar on hips. Drive hips skyward, squeeze glutes at top.', muscles:['Glutes','Hamstrings'] },
+
+  // CORE
+  { id:'plank', name:'Plank', muscle:'Core', equipment:'Bodyweight', anim:'plank', desc:'Forearms on floor, body rigid from head to heels. Brace abs, don't let hips sag.', muscles:['Core','Shoulders'] },
+  { id:'crunch', name:'Crunch', muscle:'Core', equipment:'Bodyweight', anim:'crunch', desc:'Lie on back, feet flat. Curl upper back off floor, exhale, lower slowly.', muscles:['Abs'] },
+  { id:'hanging-leg-raise', name:'Hanging Leg Raise', muscle:'Core', equipment:'Bodyweight', anim:'pullup', desc:'Hang from bar. Raise legs to 90° or higher with control. Avoid swinging.', muscles:['Lower Abs','Hip Flexors'] },
+  { id:'ab-wheel', name:'Ab Wheel Rollout', muscle:'Core', equipment:'Equipment', anim:'plank', desc:'Kneel with wheel. Roll out as far as possible keeping core braced, roll back in.', muscles:['Abs','Lower Back','Shoulders'] },
+  { id:'russian-twist', name:'Russian Twist', muscle:'Core', equipment:'Bodyweight', anim:'crunch', desc:'Sit at 45°, feet off floor. Rotate torso side to side holding a weight.', muscles:['Obliques','Abs'] },
+  { id:'cable-crunch', name:'Cable Crunch', muscle:'Core', equipment:'Cable', anim:'crunch', desc:'Kneel facing cable. Pull rope and crunch down, bringing elbows to knees.', muscles:['Abs'] },
+  { id:'dead-bug', name:'Dead Bug', muscle:'Core', equipment:'Bodyweight', anim:'plank', desc:'Lie on back, arms & legs up. Lower opposite arm and leg simultaneously. Alternate.', muscles:['Core','Lower Abs'] },
+
+  // CARDIO
+  { id:'run', name:'Running', muscle:'Cardio', equipment:'Bodyweight', anim:'run', desc:'Maintain consistent pace. Land midfoot, arms relaxed at 90°, chest tall.', muscles:['Full Body','Cardiovascular'] },
+  { id:'jump-rope', name:'Jump Rope', muscle:'Cardio', equipment:'Equipment', anim:'jump', desc:'Small jumps, wrists drive rotation. Land softly on balls of feet.', muscles:['Calves','Coordination','Cardiovascular'] },
+  { id:'burpee', name:'Burpee', muscle:'Cardio', equipment:'Bodyweight', anim:'pushup', desc:'Squat, kick feet back, pushup, jump feet in, explode up with arms overhead.', muscles:['Full Body','Cardiovascular'] },
+  { id:'box-jump', name:'Box Jump', muscle:'Cardio', equipment:'Equipment', anim:'jump', desc:'Stand before box. Swing arms and jump onto box. Step down carefully.', muscles:['Legs','Power','Cardiovascular'] },
+  { id:'mountain-climber', name:'Mountain Climber', muscle:'Cardio', equipment:'Bodyweight', anim:'run', desc:'Push-up position. Drive knees alternately toward chest rapidly.', muscles:['Core','Shoulders','Cardiovascular'] },
+];
+
+const MUSCLES = ['All','Chest','Back','Shoulders','Arms','Legs','Core','Cardio'];
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const DAY_SHORT = ['M','T','W','T','F','S','S'];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  plans: [],
+  activePlanId: null,
+  weekPlan: { Mon:null, Tue:null, Wed:null, Thu:null, Fri:null, Sat:null, Sun:null },
+  // weekPlan values: null (rest) or { name, exercises:[{exId,sets,reps,rest}] }
+};
+
+const WEEK_KEYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const WEEK_LABELS = { Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday' };
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('ironweek_v2');
+    if (s) state = JSON.parse(s);
+  } catch(e) {}
+}
+function saveState() {
+  localStorage.setItem('ironweek_v2', JSON.stringify(state));
+}
+loadState();
+
+// ============================================================
+// ANIMATION SVGS
+// ============================================================
+function getAnimSVG(animType, size=64) {
+  const s = size;
+  const c = s/2;
+  const scale = s/64;
+  const animations = {
+    pushup: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-pushup">
+      <g class="body" transform="translate(32,38)">
+        <line x1="-18" y1="0" x2="18" y2="0" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <g class="arm" transform="translate(-14,0)"><line x1="0" y1="0" x2="0" y2="12" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g class="arm" transform="translate(14,0)" style="transform-origin:14px 38px"><line x1="0" y1="0" x2="0" y2="12" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+        <line x1="-6" y1="-12" x2="6" y2="-12" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="0" cy="-20" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+      </g>
+    </svg>`,
+    squat: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-squat">
+      <g class="body" transform="translate(32,24)">
+        <circle cx="0" cy="-14" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="-9" x2="0" y2="8" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="0" y1="-2" x2="-8" y2="3" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="-2" x2="8" y2="3" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <g class="leg" transform="translate(-3,8)"><line x1="0" y1="0" x2="-4" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="-4" y1="14" x2="0" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g class="leg" transform="translate(3,8)" style="transform:scaleX(-1)"><line x1="0" y1="0" x2="-4" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/><line x1="-4" y1="14" x2="0" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+      </g>
+    </svg>`,
+    curl: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-curl">
+      <g transform="translate(32,14)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <g class="arm" transform="translate(-2,10)">
+          <line x1="0" y1="0" x2="-8" y2="4" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="-8" y1="4" x2="-14" y2="-4" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <line x1="2" y1="10" x2="10" y2="18" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="-5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    run: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-run">
+      <g class="body" transform="translate(32,16)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="-2" y1="10" x2="-12" y2="16" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round" class="arm1"/>
+        <line x1="2" y1="10" x2="12" y2="6" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-2" y1="20" x2="-8" y2="32" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round" class="leg1"/>
+        <line x1="-8" y1="32" x2="-4" y2="40" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="2" y1="20" x2="8" y2="28" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round" class="leg2"/>
+        <line x1="8" y1="28" x2="14" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    row: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-row">
+      <g class="body" transform="translate(28,28) rotate(-30)">
+        <circle cx="0" cy="-18" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="-13" x2="0" y2="2" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <g class="arm"><line x1="0" y1="-6" x2="14" y2="-2" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="16" cy="-1" r="3" fill="#e8ff47" opacity="0.5"/></g>
+        <line x1="0" y1="2" x2="-6" y2="16" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="2" x2="6" y2="16" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    press: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-press">
+      <g transform="translate(32,14)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <g class="arm">
+          <line x1="-2" y1="8" x2="-14" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="-14" y1="14" x2="-14" y2="2" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="2" y1="8" x2="14" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="14" y1="14" x2="14" y2="2" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="-16" y1="2" x2="16" y2="2" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <line x1="0" y1="20" x2="-5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    plank: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-plank">
+      <g class="body" transform="translate(8,36)">
+        <line x1="0" y1="0" x2="40" y2="0" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="0" x2="48" y2="10" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="-4" y2="10" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="12" y1="0" x2="8" y2="10" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="44" cy="-10" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+      </g>
+    </svg>`,
+    deadlift: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-deadlift">
+      <g class="body" transform="translate(28,16)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="-2" y1="9" x2="-14" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="2" y1="9" x2="14" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-16" y1="22" x2="16" y2="22" stroke="#e8ff47" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="-5" y2="36" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="5" y2="36" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    lunge: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-lunge">
+      <g class="body" transform="translate(32,12)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="-2" y1="10" x2="-10" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="2" y1="10" x2="10" y2="14" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <g class="leg1"><line x1="-2" y1="20" x2="-10" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-10" y1="34" x2="-6" y2="42" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g class="leg2"><line x1="2" y1="20" x2="10" y2="30" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="10" y1="30" x2="16" y2="42" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+      </g>
+    </svg>`,
+    pullup: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-pullup">
+      <line x1="8" y1="6" x2="56" y2="6" stroke="#e8ff47" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+      <g class="body" transform="translate(32,12)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="-12" y1="-6" x2="-12" y2="-10" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="12" y1="-6" x2="12" y2="-10" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-2" y1="-4" x2="-12" y2="-6" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="2" y1="-4" x2="12" y2="-6" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="-5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    dip: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-dip">
+      <line x1="10" y1="16" x2="10" y2="50" stroke="#e8ff47" stroke-width="2.5" opacity="0.3" stroke-linecap="round"/>
+      <line x1="54" y1="16" x2="54" y2="50" stroke="#e8ff47" stroke-width="2.5" opacity="0.3" stroke-linecap="round"/>
+      <g class="body" transform="translate(32,14)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="18" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="-2" y1="8" x2="-20" y2="8" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-20" y1="8" x2="-22" y2="4" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="2" y1="8" x2="20" y2="8" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="20" y1="8" x2="22" y2="4" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="18" x2="-3" y2="32" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="18" x2="3" y2="32" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    crunch: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-crunch">
+      <g transform="translate(8,36)">
+        <line x1="0" y1="0" x2="30" y2="0" stroke="#e8ff47" stroke-width="2.5" opacity="0.3" stroke-linecap="round"/>
+        <g class="upper" transform="translate(24,0)">
+          <line x1="0" y1="0" x2="14" y2="-6" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="18" cy="-8" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+          <line x1="4" y1="-2" x2="10" y2="4" stroke="#e8ff47" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <line x1="0" y1="0" x2="-6" y2="12" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="-6" y1="12" x2="0" y2="20" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="16" y1="0" x2="22" y2="12" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="22" y1="12" x2="16" y2="20" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    jump: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-jump">
+      <g class="body" transform="translate(32,14)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <line x1="-2" y1="10" x2="-14" y2="4" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="2" y1="10" x2="14" y2="4" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="-5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    lateral: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-lateral">
+      <g transform="translate(32,14)">
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="5" x2="0" y2="20" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <g class="arm1" style="transform-origin:-2px 8px"><line x1="-2" y1="8" x2="-16" y2="8" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="-18" cy="8" r="2" fill="#e8ff47" opacity="0.7"/></g>
+        <g class="arm2" style="transform-origin:2px 8px"><line x1="2" y1="8" x2="16" y2="8" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="18" cy="8" r="2" fill="#e8ff47" opacity="0.7"/></g>
+        <line x1="0" y1="20" x2="-5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="20" x2="5" y2="34" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+    fly: `<svg width="${s}" height="${s}" viewBox="0 0 64 64" class="stick-figure anim-fly">
+      <g transform="translate(32,20)">
+        <circle cx="0" cy="-12" r="5" fill="none" stroke="#e8ff47" stroke-width="2.5"/>
+        <line x1="0" y1="-7" x2="0" y2="8" stroke="#e8ff47" stroke-width="3" stroke-linecap="round"/>
+        <g class="arm1"><line x1="-2" y1="0" x2="-18" y2="6" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g class="arm2"><line x1="2" y1="0" x2="18" y2="6" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/></g>
+        <line x1="0" y1="8" x2="-3" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="8" x2="3" y2="22" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>`,
+  };
+  return animations[animType] || animations['jump'];
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if (name === 'week') renderWeek();
+  if (name === 'library') renderLibrary();
+  if (name === 'plans') renderPlans();
+}
+
+// ============================================================
+// WEEK SCREEN
+// ============================================================
+function renderWeek() {
+  const grid = document.getElementById('week-grid');
+  const banner = document.getElementById('today-banner-wrap');
+  banner.innerHTML = '';
+  grid.innerHTML = '';
+
+  const todayIdx = new Date().getDay(); // 0=Sun
+  // Map to Mon=0..Sun=6
+  const todayKey = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][todayIdx] || 'Mon';
+
+  // Today banner
+  const todayWorkout = state.weekPlan[todayKey];
+  if (todayWorkout) {
+    banner.innerHTML = `
+      <div class="today-banner">
+        <div>
+          <div class="today-label">Today · ${WEEK_LABELS[todayKey]}</div>
+          <div class="today-workout">${todayWorkout.name || 'Workout'}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${todayWorkout.exercises.length} exercise${todayWorkout.exercises.length!==1?'s':''}</div>
+        </div>
+        <button class="start-btn" onclick="startWorkout('${todayKey}')">▶ START</button>
+      </div>`;
+  }
+
+  WEEK_KEYS.forEach(key => {
+    const workout = state.weekPlan[key];
+    const isToday = key === todayKey;
+    const card = document.createElement('div');
+    card.className = 'day-card' + (workout ? ' has-workout' : '');
+    card.id = 'day-card-'+key;
+
+    const exerciseListHTML = workout && workout.exercises.length > 0
+      ? workout.exercises.map((ex,i) => {
+          const exData = EXERCISES.find(e => e.id === ex.exId);
+          return `<div class="day-exercise-item">
+            <div class="exercise-mini-anim">${getAnimSVG(exData?.anim||'jump', 36)}</div>
+            <div class="day-exercise-info">
+              <div class="day-exercise-name">${exData?.name||ex.exId}</div>
+              <div class="day-exercise-sets">${ex.sets} sets × ${ex.reps} reps · ${ex.rest}s rest</div>
+            </div>
+            <button class="remove-ex-btn" onclick="removeExerciseFromDay('${key}',${i})">×</button>
+          </div>`;
+        }).join('')
+      : (workout ? '<div style="color:var(--text3);font-size:13px;padding:8px 0;">No exercises yet. Add some!</div>' : '');
+
+    card.innerHTML = `
+      <div class="day-header" onclick="toggleDay('${key}')">
+        <div class="day-label">
+          <div class="day-dot ${isToday?'active':''}"></div>
+          <div>
+            <div class="day-name">${WEEK_LABELS[key]}</div>
+            <div class="day-workout-name">${workout ? (workout.name || 'Custom Workout') + ' · ' + workout.exercises.length + ' exercises' : 'Rest Day'}</div>
+          </div>
+        </div>
+        <svg class="day-chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="day-content">
+        ${workout ? `<div class="day-exercises">${exerciseListHTML}</div>
+          <div class="day-actions">
+            <button class="btn-sm btn-accent" onclick="openLibraryForDay('${key}')">+ Add Exercise</button>
+            ${workout.exercises.length>0?`<button class="btn-sm btn-ghost" onclick="startWorkout('${key}')">▶ Start</button>`:''}
+            <button class="btn-sm btn-danger" onclick="clearDay('${key}')">Clear</button>
+          </div>` :
+          `<div class="rest-badge">😴 Rest & Recover</div>
+          <div class="day-actions">
+            <button class="btn-sm btn-accent" style="flex:1" onclick="openLibraryForDay('${key}')">+ Add Workout</button>
+          </div>`
+        }
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function toggleDay(key) {
+  const card = document.getElementById('day-card-'+key);
+  card.classList.toggle('open');
+}
+
+function clearDay(key) {
+  if (confirm('Remove all exercises from ' + WEEK_LABELS[key] + '?')) {
+    state.weekPlan[key] = null;
+    saveState();
+    renderWeek();
+  }
+}
+
+function removeExerciseFromDay(key, idx) {
+  state.weekPlan[key].exercises.splice(idx, 1);
+  if (state.weekPlan[key].exercises.length === 0) {
+    // keep day but empty
+  }
+  saveState();
+  renderWeek();
+  // re-open
+  setTimeout(() => {
+    const card = document.getElementById('day-card-'+key);
+    if (card) card.classList.add('open');
+  }, 50);
+}
+
+// ============================================================
+// LIBRARY SCREEN
+// ============================================================
+let activeFilter = 'All';
+let pendingExercise = null;
+let pendingDay = null;
+let libraryTargetDay = null;
+
+function renderLibrary() {
+  // Chips
+  const chipsEl = document.getElementById('muscle-chips');
+  chipsEl.innerHTML = MUSCLES.map(m =>
+    `<div class="chip ${m===activeFilter?'active':''}" onclick="setFilter('${m}')">${m}</div>`
+  ).join('');
+  filterLibrary();
+}
+
+function setFilter(muscle) {
+  activeFilter = muscle;
+  renderLibrary();
+}
+
+function filterLibrary() {
+  const q = document.getElementById('lib-search').value.toLowerCase();
+  const list = document.getElementById('exercise-list');
+  const filtered = EXERCISES.filter(ex => {
+    const matchMuscle = activeFilter === 'All' || ex.muscle === activeFilter;
+    const matchSearch = !q || ex.name.toLowerCase().includes(q) || ex.muscle.toLowerCase().includes(q) || ex.equipment.toLowerCase().includes(q);
+    return matchMuscle && matchSearch;
+  });
+
+  list.innerHTML = filtered.map(ex => `
+    <div class="exercise-card" onclick="openExDetail('${ex.id}')">
+      <div class="anim-box">${getAnimSVG(ex.anim, 64)}</div>
+      <div class="exercise-info">
+        <div class="exercise-name">${ex.name}</div>
+        <div class="exercise-meta">
+          <span class="exercise-tag muscle">${ex.muscle}</span>
+          <span class="exercise-tag equip">${ex.equipment}</span>
+        </div>
+      </div>
+      <button class="add-ex-btn" onclick="event.stopPropagation();openAddToDay('${ex.id}')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+  `).join('');
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No Exercises Found</div><div class="empty-desc">Try a different search or filter.</div></div>';
+  }
+}
+
+function openLibraryForDay(key) {
+  libraryTargetDay = key;
+  showScreen('library');
+}
+
+// ============================================================
+// EXERCISE DETAIL MODAL
+// ============================================================
+function openExDetail(exId) {
+  const ex = EXERCISES.find(e => e.id === exId);
+  if (!ex) return;
+  document.getElementById('ex-detail-anim-wrap').innerHTML = getAnimSVG(ex.anim, 120);
+  document.getElementById('ex-detail-name').textContent = ex.name;
+  document.getElementById('ex-detail-desc').textContent = ex.desc;
+  document.getElementById('ex-detail-muscles').innerHTML = ex.muscles.map(m => `<span class="exercise-tag muscle">${m}</span>`).join('');
+  const addBtn = document.getElementById('ex-detail-add-btn');
+  addBtn.onclick = () => { closeModal('modal-ex-detail'); openAddToDay(exId); };
+  openModal('modal-ex-detail');
+}
+
+// ============================================================
+// ADD TO DAY MODAL
+// ============================================================
+function openAddToDay(exId) {
+  pendingExercise = exId;
+  const ex = EXERCISES.find(e => e.id === exId);
+  document.getElementById('modal-ex-name-title').textContent = 'Add: ' + ex.name;
+  document.getElementById('modal-ex-anim-preview').innerHTML = getAnimSVG(ex.anim, 80);
+  document.getElementById('modal-ex-muscles').textContent = ex.muscles.join(' · ');
+
+  // Day selector
+  const ds = document.getElementById('day-selector');
+  ds.innerHTML = WEEK_KEYS.map(key => {
+    const isSelected = libraryTargetDay === key;
+    return `<div class="chip ${isSelected?'active':''}" id="day-chip-${key}" onclick="selectDayChip('${key}')">${WEEK_LABELS[key].slice(0,3)}</div>`;
+  }).join('');
+
+  if (libraryTargetDay) pendingDay = libraryTargetDay;
+  openModal('modal-add-to-day');
+}
+
+function selectDayChip(key) {
+  pendingDay = key;
+  document.querySelectorAll('#day-selector .chip').forEach(c => c.classList.remove('active'));
+  document.getElementById('day-chip-'+key).classList.add('active');
+}
+
+function confirmAddExercise() {
+  if (!pendingDay) { alert('Please select a day first!'); return; }
+  if (!pendingExercise) return;
+
+  const sets = parseInt(document.getElementById('inp-sets').value) || 3;
+  const reps = parseInt(document.getElementById('inp-reps').value) || 10;
+  const rest = parseInt(document.getElementById('inp-rest').value) || 60;
+  const ex = EXERCISES.find(e => e.id === pendingExercise);
+
+  if (!state.weekPlan[pendingDay]) {
+    state.weekPlan[pendingDay] = { name: ex.muscle + ' Day', exercises: [] };
+  }
+  state.weekPlan[pendingDay].exercises.push({ exId: pendingExercise, sets, reps, rest });
+  saveState();
+  closeModal('modal-add-to-day');
+
+  // If came from week screen, go back
+  if (libraryTargetDay) {
+    libraryTargetDay = null;
+    showScreen('week');
+    setTimeout(() => {
+      const card = document.getElementById('day-card-'+pendingDay);
+      if (card) { card.classList.add('open'); card.scrollIntoView({behavior:'smooth'}); }
+    }, 100);
+  }
+  pendingDay = null;
+  pendingExercise = null;
+}
+
+// ============================================================
+// PLANS SCREEN
+// ============================================================
+function renderPlans() {
+  const list = document.getElementById('plans-list');
+  const label = document.getElementById('plans-count-label');
+  label.textContent = state.plans.length + ' plan' + (state.plans.length!==1?'s':'') + ' saved';
+
+  if (state.plans.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No Plans Yet</div><div class="empty-desc">Create a plan to save your weekly schedule and switch between programs.</div></div>';
+    return;
+  }
+
+  list.innerHTML = state.plans.map((plan, idx) => {
+    const activeDays = WEEK_KEYS.filter(k => plan.weekPlan[k] && plan.weekPlan[k].exercises.length > 0);
+    const totalEx = WEEK_KEYS.reduce((sum, k) => sum + (plan.weekPlan[k]?.exercises.length||0), 0);
+    return `<div class="plan-card" onclick="loadPlan(${idx})">
+      <div class="plan-card-header">
+        <div>
+          <div class="plan-name">${plan.name}</div>
+          <div class="plan-stats">${activeDays.length} training days · ${totalEx} exercises total ${state.activePlanId===plan.id?'· <span style="color:var(--accent)">Active</span>':''}</div>
+        </div>
+        <button class="plan-delete" onclick="event.stopPropagation();deletePlan(${idx})">🗑</button>
+      </div>
+      <div class="plan-days-preview">
+        ${WEEK_KEYS.map((k,i) => `<div class="plan-day-dot ${activeDays.includes(k)?'active':''}">${DAY_SHORT[i]}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openNewPlanModal() {
+  document.getElementById('new-plan-name').value = '';
+  openModal('modal-new-plan');
+}
+
+function createPlan() {
+  const name = document.getElementById('new-plan-name').value.trim();
+  if (!name) return;
+
+  const plan = {
+    id: Date.now().toString(),
+    name,
+    weekPlan: JSON.parse(JSON.stringify(state.weekPlan)) // snapshot current week
+  };
+  state.plans.push(plan);
+  state.activePlanId = plan.id;
+  saveState();
+  closeModal('modal-new-plan');
+  renderPlans();
+  // Show badge on week
+  updateActivePlanBadge();
+}
+
+function loadPlan(idx) {
+  const plan = state.plans[idx];
+  state.weekPlan = JSON.parse(JSON.stringify(plan.weekPlan));
+  state.activePlanId = plan.id;
+  saveState();
+  showScreen('week');
+  updateActivePlanBadge();
+}
+
+function deletePlan(idx) {
+  if (!confirm('Delete this plan?')) return;
+  state.plans.splice(idx, 1);
+  saveState();
+  renderPlans();
+}
+
+function updateActivePlanBadge() {
+  const badge = document.getElementById('active-plan-badge');
+  if (state.activePlanId) {
+    const p = state.plans.find(p => p.id === state.activePlanId);
+    if (p) { badge.textContent = '📋 ' + p.name; return; }
+  }
+  badge.textContent = '';
+}
+
+// ============================================================
+// WORKOUT PLAYER
+// ============================================================
+let playerState = { day: null, exercises: [], exIdx: 0, setIdx: 0, resting: false, timer: null };
+
+function startWorkout(dayKey) {
+  const workout = state.weekPlan[dayKey];
+  if (!workout || !workout.exercises.length) return;
+
+  playerState = {
+    day: dayKey,
+    exercises: workout.exercises,
+    exIdx: 0,
+    setIdx: 0,
+    resting: false,
+    timer: null,
+    restTimeLeft: 0,
+  };
+
+  document.getElementById('player-day-name').textContent = WEEK_LABELS[dayKey];
+  renderPlayer();
+  openModal('modal-player');
+}
+
+function renderPlayer() {
+  const ps = playerState;
+  const total = ps.exercises.reduce((s,e) => s + e.sets, 0);
+  const done = ps.exercises.slice(0, ps.exIdx).reduce((s,e) => s + e.sets, 0) + ps.setIdx;
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+
+  document.getElementById('player-progress-label').textContent = `${done}/${total} sets`;
+  document.getElementById('player-progress-bar').style.width = pct + '%';
+
+  const ex = ps.exercises[ps.exIdx];
+  const exData = EXERCISES.find(e => e.id === ex.exId);
+
+  const setCircles = Array.from({length: ex.sets}, (_,i) => {
+    let cls = 'set-circle';
+    if (i < ps.setIdx) cls += ' done';
+    else if (i === ps.setIdx) cls += ' current';
+    return `<div class="${cls}">${i+1}</div>`;
+  }).join('');
+
+  if (ps.resting) {
+    document.getElementById('player-content').innerHTML = `
+      <div class="player-exercise">
+        <div style="font-size:40px;margin-bottom:16px;">😮‍💨</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text2);">REST</div>
+        <div class="timer-display" id="rest-timer-display">${ps.restTimeLeft}</div>
+        <div class="timer-label">seconds remaining</div>
+        <div style="font-size:13px;color:var(--text2);">Next: ${exData?.name}</div>
+      </div>`;
+    document.getElementById('player-next-btn').textContent = 'Skip Rest →';
+    document.getElementById('player-prev-btn').style.display = 'none';
+  } else {
+    document.getElementById('player-content').innerHTML = `
+      <div class="player-exercise">
+        <div class="player-ex-anim">${getAnimSVG(exData?.anim||'jump', 160)}</div>
+        <div class="player-ex-name">${exData?.name||ex.exId}</div>
+        <div class="player-sets-info">Set ${ps.setIdx+1} of ${ex.sets} · ${ex.reps} reps</div>
+        <div class="set-counter">${setCircles}</div>
+        <div style="font-size:13px;color:var(--text3);">Rest: ${ex.rest}s after each set</div>
+      </div>`;
+    document.getElementById('player-next-btn').textContent = 'Done Set ✓';
+    document.getElementById('player-prev-btn').style.display = '';
+  }
+}
+
+function playerNext() {
+  const ps = playerState;
+  if (ps.resting) {
+    // Skip rest
+    clearInterval(ps.timer);
+    ps.resting = false;
+    renderPlayer();
+    return;
+  }
+
+  const ex = ps.exercises[ps.exIdx];
+  ps.setIdx++;
+
+  if (ps.setIdx >= ex.sets) {
+    // Move to next exercise
+    ps.exIdx++;
+    ps.setIdx = 0;
+    if (ps.exIdx >= ps.exercises.length) {
+      // Workout complete!
+      clearInterval(ps.timer);
+      document.getElementById('player-content').innerHTML = `
+        <div style="text-align:center;padding:40px 0;">
+          <div style="font-size:60px;margin-bottom:20px;">🏆</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--accent);">WORKOUT DONE!</div>
+          <div style="font-size:16px;color:var(--text2);margin-top:8px;">Incredible work. Rest and recover.</div>
+        </div>`;
+      document.getElementById('player-next-btn').textContent = 'Close';
+      document.getElementById('player-next-btn').onclick = () => closeModal('modal-player');
+      document.getElementById('player-prev-btn').style.display = 'none';
+      document.getElementById('player-progress-bar').style.width = '100%';
+      return;
+    }
+  }
+
+  // Start rest timer
+  if (ex.rest > 0) {
+    ps.resting = true;
+    ps.restTimeLeft = ex.rest;
+    renderPlayer();
+    ps.timer = setInterval(() => {
+      ps.restTimeLeft--;
+      const el = document.getElementById('rest-timer-display');
+      if (el) el.textContent = ps.restTimeLeft;
+      if (ps.restTimeLeft <= 0) {
+        clearInterval(ps.timer);
+        ps.resting = false;
+        renderPlayer();
+      }
+    }, 1000);
+  } else {
+    renderPlayer();
+  }
+}
+
+function playerPrev() {
+  const ps = playerState;
+  if (ps.resting) { clearInterval(ps.timer); ps.resting = false; }
+  if (ps.setIdx > 0) { ps.setIdx--; }
+  else if (ps.exIdx > 0) { ps.exIdx--; ps.setIdx = ps.exercises[ps.exIdx].sets - 1; }
+  renderPlayer();
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+  if (id === 'modal-player' && playerState.timer) {
+    clearInterval(playerState.timer);
+  }
+}
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+updateActivePlanBadge();
+renderWeek();
+renderLibrary();
+</script>
+</body>
+</html>
