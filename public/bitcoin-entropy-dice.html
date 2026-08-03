@@ -332,7 +332,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/bip39.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.10.1/src/sha256.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
     <script>
         class EntropyDice {
             constructor() {
@@ -363,7 +363,6 @@
                     Math.floor(Math.random() * 6) + 1
                 ];
 
-                // Animate dice
                 const dieElements = [
                     document.getElementById('die1'),
                     document.getElementById('die2'),
@@ -378,16 +377,13 @@
                     }, 500);
                 });
 
-                // Collect entropy: convert dice (1-6) to base-6 digits
                 this.entropy.push(...dice);
-
-                // Calculate entropy: each die is log2(6) ≈ 2.585 bits
                 this.bitsCollected = Math.floor(this.entropy.length * Math.log2(6));
 
                 this.updateDisplay();
 
                 if (this.bitsCollected >= 256) {
-                    this.generateSeed();
+                    setTimeout(() => this.generateSeed(), 600);
                 }
             }
 
@@ -403,45 +399,50 @@
             }
 
             generateSeed() {
-                // Convert dice rolls (1-6) to proper entropy
-                // Use SHA-256 of dice values to generate 256-bit entropy
-                const diceString = this.entropy.join('');
-                const hash = sha256(diceString);
+                try {
+                    const diceString = this.entropy.join('');
 
-                // Convert hex to byte array (32 bytes = 256 bits)
-                const entropyBytes = new Uint8Array(
-                    hash.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
-                );
+                    // Use CryptoJS SHA256 to hash dice values
+                    const hashHex = CryptoJS.SHA256(diceString).toString();
 
-                // Generate 24-word mnemonic from 256-bit entropy
-                this.mnemonic = bip39.entropyToMnemonic(entropyBytes);
+                    // Convert hex to byte array (32 bytes = 256 bits)
+                    const entropyBytes = new Uint8Array(
+                        hashHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+                    );
 
-                document.getElementById('mnemonicPhrase').textContent = this.mnemonic;
-                this.walletSection.style.display = 'none';
-                this.passphraseInput.value = '';
-                this.resultSection.classList.add('show');
+                    // Generate 24-word mnemonic from 256-bit entropy
+                    this.mnemonic = bip39.entropyToMnemonic(entropyBytes);
+
+                    document.getElementById('mnemonicPhrase').textContent = this.mnemonic;
+                    this.walletSection.style.display = 'none';
+                    this.passphraseInput.value = '';
+                    this.resultSection.classList.add('show');
+                } catch (err) {
+                    console.error('Seed generation error:', err);
+                    document.getElementById('mnemonicPhrase').textContent = 'Error generating seed. Please try again.';
+                    this.resultSection.classList.add('show');
+                }
             }
 
             generateWallet() {
                 if (!this.mnemonic) return;
 
-                const passphrase = this.passphraseInput.value;
+                try {
+                    const passphrase = this.passphraseInput.value;
+                    const seed = bip39.mnemonicToSeed(this.mnemonic, passphrase);
 
-                // Generate wallet seed from mnemonic + passphrase
-                // BIP39 combines mnemonic with optional passphrase
-                const seed = bip39.mnemonicToSeed(this.mnemonic, passphrase);
+                    const seedHex = Array.from(new Uint8Array(seed))
+                        .map(b => b.toString(16).padStart(2, '0'))
+                        .join('');
 
-                // Display as hex string
-                const seedHex = Array.from(new Uint8Array(seed))
-                    .map(b => b.toString(16).padStart(2, '0'))
-                    .join('');
-
-                document.getElementById('walletSeed').textContent = seedHex;
-                this.walletSection.style.display = 'block';
+                    document.getElementById('walletSeed').textContent = seedHex;
+                    this.walletSection.style.display = 'block';
+                } catch (err) {
+                    console.error('Wallet generation error:', err);
+                }
             }
 
             onPassphraseChange() {
-                // Auto-generate wallet when passphrase is entered
                 if (this.passphraseInput.value.length > 0 && this.mnemonic) {
                     this.generateWallet();
                 }
