@@ -308,9 +308,9 @@
         </div>
 
         <div class="result-section" id="resultSection">
-            <div class="result-label">Your 256-Bit Entropy (Hex)</div>
+            <div class="result-label">Your 24-Word Seed Phrase</div>
             <div class="mnemonic-phrase" id="mnemonicPhrase"></div>
-            <button class="copy-btn" id="copyMnemonicBtn">📋 Copy Entropy</button>
+            <button class="copy-btn" id="copyMnemonicBtn">📋 Copy Phrase</button>
 
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #00ff88;">
                 <div class="result-label">Optional: Passphrase (25th Word)</div>
@@ -492,8 +492,9 @@
             }
 
             copyEntropy() {
-                if (this.entropyHex) {
-                    navigator.clipboard.writeText(this.entropyHex).then(() => {
+                const mnemonicText = document.getElementById('mnemonicPhrase').textContent;
+                if (mnemonicText) {
+                    navigator.clipboard.writeText(mnemonicText).then(() => {
                         this.copyMnemonicBtn.textContent = '✓ Copied!';
                         this.copyMnemonicBtn.classList.add('copied');
                         setTimeout(() => {
