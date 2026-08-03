@@ -332,7 +332,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/bip39.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
     <script>
         class EntropyDice {
             constructor() {
@@ -398,17 +397,15 @@
                 this.rollBtn.disabled = this.bitsCollected >= 256;
             }
 
-            generateSeed() {
+            async generateSeed() {
                 try {
                     const diceString = this.entropy.join('');
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(diceString);
 
-                    // Use CryptoJS SHA256 to hash dice values
-                    const hashHex = CryptoJS.SHA256(diceString).toString();
-
-                    // Convert hex to byte array (32 bytes = 256 bits)
-                    const entropyBytes = new Uint8Array(
-                        hashHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
-                    );
+                    // Use native Web Crypto API SHA-256 (no external dependency)
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                    const entropyBytes = new Uint8Array(hashBuffer);
 
                     // Generate 24-word mnemonic from 256-bit entropy
                     this.mnemonic = bip39.entropyToMnemonic(entropyBytes);
@@ -419,7 +416,7 @@
                     this.resultSection.classList.add('show');
                 } catch (err) {
                     console.error('Seed generation error:', err);
-                    document.getElementById('mnemonicPhrase').textContent = 'Error generating seed. Please try again.';
+                    document.getElementById('mnemonicPhrase').textContent = 'Error: ' + err.message;
                     this.resultSection.classList.add('show');
                 }
             }
