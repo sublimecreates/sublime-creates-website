@@ -331,6 +331,7 @@
         </div>
     </div>
 
+    <script async src="https://cdn.jsdelivr.net/npm/bip39@3.1.0"></script>
     <script>
         class EntropyDice {
             constructor() {
@@ -407,8 +408,17 @@
                         .map(b => b.toString(16).padStart(2, '0'))
                         .join('');
 
-                    // Display entropy (user can import into any wallet)
-                    document.getElementById('mnemonicPhrase').textContent = this.entropyHex;
+                    // Try to generate BIP39 mnemonic if library loaded
+                    let displayText = this.entropyHex;
+                    if (typeof bip39 !== 'undefined' && bip39.entropyToMnemonic) {
+                        try {
+                            displayText = bip39.entropyToMnemonic(this.entropyHex);
+                        } catch (e) {
+                            console.warn('Could not generate mnemonic:', e);
+                        }
+                    }
+
+                    document.getElementById('mnemonicPhrase').textContent = displayText;
                     this.walletSection.style.display = 'none';
                     this.passphraseInput.value = '';
                     this.resultSection.classList.add('show');
