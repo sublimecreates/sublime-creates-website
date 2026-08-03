@@ -346,6 +346,10 @@
                 this.generateWalletBtn = document.getElementById('generateWalletBtn');
                 this.walletSection = document.getElementById('walletSection');
                 this.copyWalletBtn = document.getElementById('copyWalletBtn');
+                this.bip39Ready = false;
+
+                // Wait for bip39 library to load
+                this.waitForBip39();
 
                 this.rollBtn.addEventListener('click', () => this.roll());
                 this.resetBtn.addEventListener('click', () => this.reset());
@@ -353,6 +357,14 @@
                 this.generateWalletBtn.addEventListener('click', () => this.generateWallet());
                 this.copyWalletBtn.addEventListener('click', () => this.copyWallet());
                 this.passphraseInput.addEventListener('input', () => this.onPassphraseChange());
+            }
+
+            waitForBip39() {
+                if (typeof window.bip39 !== 'undefined') {
+                    this.bip39Ready = true;
+                } else {
+                    setTimeout(() => this.waitForBip39(), 100);
+                }
             }
 
             roll() {
@@ -399,16 +411,21 @@
 
             async generateSeed() {
                 try {
+                    // Wait for bip39 to be ready
+                    if (!this.bip39Ready) {
+                        throw new Error('BIP39 library not loaded yet');
+                    }
+
                     const diceString = this.entropy.join('');
                     const encoder = new TextEncoder();
                     const data = encoder.encode(diceString);
 
-                    // Use native Web Crypto API SHA-256 (no external dependency)
+                    // Use native Web Crypto API SHA-256
                     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
                     const entropyBytes = new Uint8Array(hashBuffer);
 
                     // Generate 24-word mnemonic from 256-bit entropy
-                    this.mnemonic = bip39.entropyToMnemonic(entropyBytes);
+                    this.mnemonic = window.bip39.entropyToMnemonic(entropyBytes);
 
                     document.getElementById('mnemonicPhrase').textContent = this.mnemonic;
                     this.walletSection.style.display = 'none';
@@ -422,11 +439,11 @@
             }
 
             generateWallet() {
-                if (!this.mnemonic) return;
+                if (!this.mnemonic || !this.bip39Ready) return;
 
                 try {
                     const passphrase = this.passphraseInput.value;
-                    const seed = bip39.mnemonicToSeed(this.mnemonic, passphrase);
+                    const seed = window.bip39.mnemonicToSeed(this.mnemonic, passphrase);
 
                     const seedHex = Array.from(new Uint8Array(seed))
                         .map(b => b.toString(16).padStart(2, '0'))
