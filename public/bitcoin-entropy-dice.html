@@ -331,7 +331,8 @@
         </div>
     </div>
 
-    <script async src="https://cdn.jsdelivr.net/npm/bip39@3.1.0"></script>
+    <!-- Load local BIP39 word list -->
+    <script src="/bip39-wordlist.js"></script>
     <script>
         class EntropyDice {
             constructor() {
@@ -408,17 +409,10 @@
                         .map(b => b.toString(16).padStart(2, '0'))
                         .join('');
 
-                    // Try to generate BIP39 mnemonic if library loaded
-                    let displayText = this.entropyHex;
-                    if (typeof bip39 !== 'undefined' && bip39.entropyToMnemonic) {
-                        try {
-                            displayText = bip39.entropyToMnemonic(this.entropyHex);
-                        } catch (e) {
-                            console.warn('Could not generate mnemonic:', e);
-                        }
-                    }
+                    // Convert entropy to mnemonic using local word list
+                    const mnemonic = await this.entropyToMnemonic(this.entropyHex);
 
-                    document.getElementById('mnemonicPhrase').textContent = displayText;
+                    document.getElementById('mnemonicPhrase').textContent = mnemonic;
                     this.walletSection.style.display = 'none';
                     this.passphraseInput.value = '';
                     this.resultSection.classList.add('show');
@@ -429,27 +423,59 @@
                 }
             }
 
+            async entropyToMnemonic(entropyHex) {
+                // Convert hex entropy to binary
+                const binary = BigInt('0x' + entropyHex).toString(2).padStart(256, '0');
+
+                // Calculate checksum: first 8 bits of SHA-256 hash of entropy
+                const entropyBytes = new Uint8Array(entropyHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                const hashBuffer = await crypto.subtle.digest('SHA-256', entropyBytes);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                let checksumBinary = BigInt('0x' + hashHex).toString(2).padStart(256, '0');
+                checksumBinary = checksumBinary.substring(0, 8);
+
+                // Combine entropy and checksum
+                const combined = binary + checksumBinary;
+
+                // Split into 11-bit chunks and convert to word indices
+                const words = [];
+                for (let i = 0; i < combined.length; i += 11) {
+                    const chunk = combined.substring(i, i + 11);
+                    const index = parseInt(chunk, 2);
+                    if (BIP39_WORDLIST[index]) {
+                        words.push(BIP39_WORDLIST[index]);
+                    }
+                }
+
+                return words.join(' ');
+            }
+
             async generateWallet() {
-                if (!this.entropyHex) return;
+                if (!document.getElementById('mnemonicPhrase').textContent) return;
 
                 try {
+                    const mnemonic = document.getElementById('mnemonicPhrase').textContent;
                     const passphrase = this.passphraseInput.value;
 
-                    // Create seed: entropy + passphrase
+                    // BIP39 seed derivation: PBKDF2-SHA512(mnemonic + passphrase, salt)
+                    // Salt is "TREZOR" + passphrase (the passphrase is used as part of salt)
                     const encoder = new TextEncoder();
-                    const passphraseData = encoder.encode('Bitcoin seed' + this.entropyHex + passphrase);
+                    const mnemonicSalt = encoder.encode('mnemonic' + passphrase);
+                    const mnemonicData = encoder.encode(mnemonic);
 
-                    // Generate wallet seed using PBKDF2
+                    // Generate wallet seed using PBKDF2-SHA512
                     const key = await crypto.subtle.importKey(
                         'raw',
-                        passphraseData,
+                        mnemonicData,
                         { name: 'PBKDF2' },
                         false,
                         ['deriveBits']
                     );
 
                     const seedBuffer = await crypto.subtle.deriveBits(
-                        { name: 'PBKDF2', hash: 'SHA-512', iterations: 2048, salt: encoder.encode(this.entropyHex) },
+                        { name: 'PBKDF2', hash: 'SHA-512', iterations: 2048, salt: mnemonicSalt },
                         key,
                         512
                     );
