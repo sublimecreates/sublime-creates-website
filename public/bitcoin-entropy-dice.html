@@ -331,7 +331,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/bip39.min.js"></script>
+    <script src="https://unpkg.com/bip39@3.1.0/dist/bip39.min.js"></script>
     <script>
         class EntropyDice {
             constructor() {
@@ -347,6 +347,7 @@
                 this.walletSection = document.getElementById('walletSection');
                 this.copyWalletBtn = document.getElementById('copyWalletBtn');
                 this.bip39Ready = false;
+                this.bip39Attempts = 0;
 
                 // Wait for bip39 library to load
                 this.waitForBip39();
@@ -360,10 +361,14 @@
             }
 
             waitForBip39() {
-                if (typeof window.bip39 !== 'undefined') {
+                this.bip39Attempts++;
+                if (typeof window.bip39 !== 'undefined' && typeof window.bip39.entropyToMnemonic === 'function') {
                     this.bip39Ready = true;
-                } else {
+                    console.log('✓ BIP39 library loaded');
+                } else if (this.bip39Attempts < 50) {
                     setTimeout(() => this.waitForBip39(), 100);
+                } else {
+                    console.error('✗ BIP39 library failed to load after 5 seconds');
                 }
             }
 
@@ -411,9 +416,15 @@
 
             async generateSeed() {
                 try {
-                    // Wait for bip39 to be ready
+                    // Wait for bip39 to be ready (with retry)
+                    let waitCount = 0;
+                    while (!this.bip39Ready && waitCount < 10) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        waitCount++;
+                    }
+
                     if (!this.bip39Ready) {
-                        throw new Error('BIP39 library not loaded yet');
+                        throw new Error('BIP39 library failed to load. Please refresh the page.');
                     }
 
                     const diceString = this.entropy.join('');
