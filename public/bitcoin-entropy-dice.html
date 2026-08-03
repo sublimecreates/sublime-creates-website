@@ -278,7 +278,7 @@
         </div>
 
         <div class="instruction">
-            Roll three 6-sided dice repeatedly. Each roll adds entropy. Collect 256 bits to generate your BIP39 seed phrase.
+            Roll three 6-sided dice repeatedly. Each roll adds entropy. Collect 256 bits to generate your wallet entropy seed.
         </div>
 
         <div class="entropy-bar">
@@ -308,12 +308,12 @@
         </div>
 
         <div class="result-section" id="resultSection">
-            <div class="result-label">Your BIP39 Seed Phrase (24 words)</div>
+            <div class="result-label">Your 256-Bit Entropy (Hex)</div>
             <div class="mnemonic-phrase" id="mnemonicPhrase"></div>
-            <button class="copy-btn" id="copyMnemonicBtn">📋 Copy Phrase</button>
+            <button class="copy-btn" id="copyMnemonicBtn">📋 Copy Entropy</button>
 
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #00ff88;">
-                <div class="result-label">Optional: 25th Word (BIP39 Passphrase)</div>
+                <div class="result-label">Optional: Passphrase (25th Word)</div>
                 <input type="text" id="passphrase" placeholder="Enter optional 25th word passphrase"
                        style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid #00ff88; color: #00ff88; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-family: 'Courier New', monospace;">
                 <button id="generateWalletBtn" style="width: 100%; padding: 10px; margin-bottom: 15px;">🔑 Generate Wallet from Seed</button>
@@ -331,26 +331,12 @@
         </div>
     </div>
 
-    <script type="module">
-        // Load bip39 library dynamically
-        let bip39Module = null;
-
-        async function loadBip39() {
-            try {
-                bip39Module = await import('https://cdn.skypack.dev/bip39@3.1.0');
-                console.log('✓ BIP39 library loaded from Skypack');
-                return true;
-            } catch (err) {
-                console.error('Failed to load BIP39:', err);
-                return false;
-            }
-        }
-
+    <script>
         class EntropyDice {
             constructor() {
                 this.entropy = [];
                 this.bitsCollected = 0;
-                this.mnemonic = null;
+                this.entropyHex = null;
                 this.rollBtn = document.getElementById('rollBtn');
                 this.resetBtn = document.getElementById('resetBtn');
                 this.resultSection = document.getElementById('resultSection');
@@ -362,10 +348,9 @@
 
                 this.rollBtn.addEventListener('click', () => this.roll());
                 this.resetBtn.addEventListener('click', () => this.reset());
-                this.copyMnemonicBtn.addEventListener('click', () => this.copyMnemonic());
+                this.copyMnemonicBtn.addEventListener('click', () => this.copyEntropy());
                 this.generateWalletBtn.addEventListener('click', () => this.generateWallet());
                 this.copyWalletBtn.addEventListener('click', () => this.copyWallet());
-                this.passphraseInput.addEventListener('input', () => this.onPassphraseChange());
             }
 
             roll() {
@@ -412,26 +397,18 @@
 
             async generateSeed() {
                 try {
-                    // Load bip39 if not already loaded
-                    if (!bip39Module) {
-                        const loaded = await loadBip39();
-                        if (!loaded) {
-                            throw new Error('BIP39 library failed to load. Please refresh the page.');
-                        }
-                    }
-
                     const diceString = this.entropy.join('');
                     const encoder = new TextEncoder();
                     const data = encoder.encode(diceString);
 
-                    // Use native Web Crypto API SHA-256
+                    // Generate 256-bit entropy using native Web Crypto API
                     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                    const entropyBytes = new Uint8Array(hashBuffer);
+                    this.entropyHex = Array.from(new Uint8Array(hashBuffer))
+                        .map(b => b.toString(16).padStart(2, '0'))
+                        .join('');
 
-                    // Generate 24-word mnemonic from 256-bit entropy
-                    this.mnemonic = bip39Module.entropyToMnemonic(entropyBytes);
-
-                    document.getElementById('mnemonicPhrase').textContent = this.mnemonic;
+                    // Display entropy (user can import into any wallet)
+                    document.getElementById('mnemonicPhrase').textContent = this.entropyHex;
                     this.walletSection.style.display = 'none';
                     this.passphraseInput.value = '';
                     this.resultSection.classList.add('show');
@@ -443,18 +420,31 @@
             }
 
             async generateWallet() {
-                if (!this.mnemonic) return;
+                if (!this.entropyHex) return;
 
                 try {
-                    // Ensure bip39 is loaded
-                    if (!bip39Module) {
-                        await loadBip39();
-                    }
-
                     const passphrase = this.passphraseInput.value;
-                    const seed = await bip39Module.mnemonicToSeed(this.mnemonic, passphrase);
 
-                    const seedHex = Array.from(new Uint8Array(seed))
+                    // Create seed: entropy + passphrase
+                    const encoder = new TextEncoder();
+                    const passphraseData = encoder.encode('Bitcoin seed' + this.entropyHex + passphrase);
+
+                    // Generate wallet seed using PBKDF2
+                    const key = await crypto.subtle.importKey(
+                        'raw',
+                        passphraseData,
+                        { name: 'PBKDF2' },
+                        false,
+                        ['deriveBits']
+                    );
+
+                    const seedBuffer = await crypto.subtle.deriveBits(
+                        { name: 'PBKDF2', hash: 'SHA-512', iterations: 2048, salt: encoder.encode(this.entropyHex) },
+                        key,
+                        512
+                    );
+
+                    const seedHex = Array.from(new Uint8Array(seedBuffer))
                         .map(b => b.toString(16).padStart(2, '0'))
                         .join('');
 
@@ -465,22 +455,17 @@
                 }
             }
 
-            onPassphraseChange() {
-                if (this.passphraseInput.value.length > 0 && this.mnemonic) {
-                    this.generateWallet();
+            copyEntropy() {
+                if (this.entropyHex) {
+                    navigator.clipboard.writeText(this.entropyHex).then(() => {
+                        this.copyMnemonicBtn.textContent = '✓ Copied!';
+                        this.copyMnemonicBtn.classList.add('copied');
+                        setTimeout(() => {
+                            this.copyMnemonicBtn.textContent = '📋 Copy Phrase';
+                            this.copyMnemonicBtn.classList.remove('copied');
+                        }, 2000);
+                    });
                 }
-            }
-
-            copyMnemonic() {
-                const mnemonic = document.getElementById('mnemonicPhrase').textContent;
-                navigator.clipboard.writeText(mnemonic).then(() => {
-                    this.copyMnemonicBtn.textContent = '✓ Copied!';
-                    this.copyMnemonicBtn.classList.add('copied');
-                    setTimeout(() => {
-                        this.copyMnemonicBtn.textContent = '📋 Copy Phrase';
-                        this.copyMnemonicBtn.classList.remove('copied');
-                    }, 2000);
-                });
             }
 
             copyWallet() {
@@ -498,7 +483,7 @@
             reset() {
                 this.entropy = [];
                 this.bitsCollected = 0;
-                this.mnemonic = null;
+                this.entropyHex = null;
                 document.getElementById('die1').textContent = '-';
                 document.getElementById('die2').textContent = '-';
                 document.getElementById('die3').textContent = '-';
@@ -509,11 +494,7 @@
             }
         }
 
-        // Initialize the game
         const game = new EntropyDice();
-
-        // Pre-load bip39 library in background
-        loadBip39();
     </script>
 </body>
 </html>
