@@ -310,27 +310,50 @@
         <div class="result-section" id="resultSection">
             <div class="result-label">Your BIP39 Seed Phrase (24 words)</div>
             <div class="mnemonic-phrase" id="mnemonicPhrase"></div>
-            <button class="copy-btn" id="copyBtn">📋 Copy to Clipboard</button>
+            <button class="copy-btn" id="copyMnemonicBtn">📋 Copy Phrase</button>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #00ff88;">
+                <div class="result-label">Optional: 25th Word (BIP39 Passphrase)</div>
+                <input type="text" id="passphrase" placeholder="Enter optional 25th word passphrase"
+                       style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid #00ff88; color: #00ff88; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-family: 'Courier New', monospace;">
+                <button id="generateWalletBtn" style="width: 100%; padding: 10px; margin-bottom: 15px;">🔑 Generate Wallet from Seed</button>
+            </div>
+
+            <div id="walletSection" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #00ccff;">
+                <div class="result-label">Wallet Seed (with passphrase if provided)</div>
+                <div class="mnemonic-phrase" id="walletSeed" style="word-break: break-all; font-size: 12px;"></div>
+                <button class="copy-btn" id="copyWalletBtn">📋 Copy Wallet Seed</button>
+            </div>
+
             <div class="warning">
-                ⚠️ Never share this seed phrase. Store it securely offline. Anyone with this phrase can access your Bitcoin.
+                ⚠️ Never share this seed phrase or passphrase. Store them securely offline. Anyone with this phrase can access your Bitcoin.
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/bip39.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.10.1/src/sha256.js"></script>
     <script>
         class EntropyDice {
             constructor() {
                 this.entropy = [];
                 this.bitsCollected = 0;
+                this.mnemonic = null;
                 this.rollBtn = document.getElementById('rollBtn');
                 this.resetBtn = document.getElementById('resetBtn');
                 this.resultSection = document.getElementById('resultSection');
-                this.copyBtn = document.getElementById('copyBtn');
+                this.copyMnemonicBtn = document.getElementById('copyMnemonicBtn');
+                this.passphraseInput = document.getElementById('passphrase');
+                this.generateWalletBtn = document.getElementById('generateWalletBtn');
+                this.walletSection = document.getElementById('walletSection');
+                this.copyWalletBtn = document.getElementById('copyWalletBtn');
 
                 this.rollBtn.addEventListener('click', () => this.roll());
                 this.resetBtn.addEventListener('click', () => this.reset());
-                this.copyBtn.addEventListener('click', () => this.copyMnemonic());
+                this.copyMnemonicBtn.addEventListener('click', () => this.copyMnemonic());
+                this.generateWalletBtn.addEventListener('click', () => this.generateWallet());
+                this.copyWalletBtn.addEventListener('click', () => this.copyWallet());
+                this.passphraseInput.addEventListener('input', () => this.onPassphraseChange());
             }
 
             roll() {
@@ -355,8 +378,7 @@
                     }, 500);
                 });
 
-                // Each die roll (1-6) adds about 2.585 bits of entropy
-                // We'll collect the raw values
+                // Collect entropy: convert dice (1-6) to base-6 digits
                 this.entropy.push(...dice);
 
                 // Calculate entropy: each die is log2(6) ≈ 2.585 bits
@@ -381,46 +403,70 @@
             }
 
             generateSeed() {
-                // Convert dice rolls to entropy buffer
-                // Create a buffer from the collected entropy
-                const entropyValue = this.entropy.reduce((acc, die, i) => {
-                    return acc + (die - 1) * Math.pow(6, i);
-                }, 0);
+                // Convert dice rolls (1-6) to proper entropy
+                // Use SHA-256 of dice values to generate 256-bit entropy
+                const diceString = this.entropy.join('');
+                const hash = sha256(diceString);
 
-                // Generate random 256-bit entropy
-                // Using the dice as seed for a more deterministic approach
-                const hash = this.hashEntropy(this.entropy.join(''));
-                const entropyHex = hash.substring(0, 64); // 256 bits = 64 hex chars
-
-                // Convert hex to byte array for bip39
+                // Convert hex to byte array (32 bytes = 256 bits)
                 const entropyBytes = new Uint8Array(
-                    entropyHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+                    hash.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
                 );
 
-                // Generate mnemonic from entropy
-                const mnemonic = bip39.entropyToMnemonic(entropyBytes);
+                // Generate 24-word mnemonic from 256-bit entropy
+                this.mnemonic = bip39.entropyToMnemonic(entropyBytes);
 
-                document.getElementById('mnemonicPhrase').textContent = mnemonic;
+                document.getElementById('mnemonicPhrase').textContent = this.mnemonic;
+                this.walletSection.style.display = 'none';
+                this.passphraseInput.value = '';
                 this.resultSection.classList.add('show');
             }
 
-            hashEntropy(data) {
-                // Simple but deterministic hash for entropy
-                let hash = '';
-                for (let i = 0; i < 64; i++) {
-                    hash += data.charCodeAt(i % data.length).toString(16).padStart(2, '0');
+            generateWallet() {
+                if (!this.mnemonic) return;
+
+                const passphrase = this.passphraseInput.value;
+
+                // Generate wallet seed from mnemonic + passphrase
+                // BIP39 combines mnemonic with optional passphrase
+                const seed = bip39.mnemonicToSeed(this.mnemonic, passphrase);
+
+                // Display as hex string
+                const seedHex = Array.from(new Uint8Array(seed))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+
+                document.getElementById('walletSeed').textContent = seedHex;
+                this.walletSection.style.display = 'block';
+            }
+
+            onPassphraseChange() {
+                // Auto-generate wallet when passphrase is entered
+                if (this.passphraseInput.value.length > 0 && this.mnemonic) {
+                    this.generateWallet();
                 }
-                return hash.substring(0, 64);
             }
 
             copyMnemonic() {
                 const mnemonic = document.getElementById('mnemonicPhrase').textContent;
                 navigator.clipboard.writeText(mnemonic).then(() => {
-                    this.copyBtn.textContent = '✓ Copied!';
-                    this.copyBtn.classList.add('copied');
+                    this.copyMnemonicBtn.textContent = '✓ Copied!';
+                    this.copyMnemonicBtn.classList.add('copied');
                     setTimeout(() => {
-                        this.copyBtn.textContent = '📋 Copy to Clipboard';
-                        this.copyBtn.classList.remove('copied');
+                        this.copyMnemonicBtn.textContent = '📋 Copy Phrase';
+                        this.copyMnemonicBtn.classList.remove('copied');
+                    }, 2000);
+                });
+            }
+
+            copyWallet() {
+                const walletSeed = document.getElementById('walletSeed').textContent;
+                navigator.clipboard.writeText(walletSeed).then(() => {
+                    this.copyWalletBtn.textContent = '✓ Copied!';
+                    this.copyWalletBtn.classList.add('copied');
+                    setTimeout(() => {
+                        this.copyWalletBtn.textContent = '📋 Copy Wallet Seed';
+                        this.copyWalletBtn.classList.remove('copied');
                     }, 2000);
                 });
             }
@@ -428,10 +474,13 @@
             reset() {
                 this.entropy = [];
                 this.bitsCollected = 0;
+                this.mnemonic = null;
                 document.getElementById('die1').textContent = '-';
                 document.getElementById('die2').textContent = '-';
                 document.getElementById('die3').textContent = '-';
+                document.getElementById('passphrase').value = '';
                 this.resultSection.classList.remove('show');
+                this.walletSection.style.display = 'none';
                 this.updateDisplay();
             }
         }
